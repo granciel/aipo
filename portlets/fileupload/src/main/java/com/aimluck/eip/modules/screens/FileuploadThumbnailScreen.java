@@ -117,7 +117,7 @@ public class FileuploadThumbnailScreen extends RawScreen {
       Calendar calendar = Calendar.getInstance();
       calendar.add(Calendar.DATE, 30);
       Date expired = calendar.getTime();
-      response.setDateHeader("Expires ", expired.getTime());
+      response.setDateHeader("Expires", expired.getTime());
 
       if (this.lastModified != null) {
         response.setDateHeader("Last-Modified", this.lastModified.getTime());
