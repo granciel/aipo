@@ -65,6 +65,28 @@ public class ExtTimecardSystemDetailResultData extends
 
   private boolean isOvertypeWeek;
 
+  private ALStringField default_holiday_flag;
+
+  private ALStringField week1;
+
+  private ALStringField week2;
+
+  private ALStringField week3;
+
+  private ALStringField week4;
+
+  private ALStringField week5;
+
+  private ALStringField week6;
+
+  private ALStringField week7;
+
+  private ALStringField statutoryHoliday;
+
+  private ALStringField holiday;
+
+  private boolean hasHoliday;
+
   /**
    *
    *
@@ -88,6 +110,16 @@ public class ExtTimecardSystemDetailResultData extends
     update_date = new ALStringField();
     overtime_type_minute_by_day = new ALNumberField();
     overtime_type_hour_by_week = new ALNumberField();
+    default_holiday_flag = new ALStringField();
+    week1 = new ALStringField();
+    week2 = new ALStringField();
+    week3 = new ALStringField();
+    week4 = new ALStringField();
+    week5 = new ALStringField();
+    week6 = new ALStringField();
+    week7 = new ALStringField();
+    statutoryHoliday = new ALStringField();
+    holiday = new ALStringField();
   }
 
   public String getUserId() {
@@ -177,6 +209,46 @@ public class ExtTimecardSystemDetailResultData extends
     return start_day;
   }
 
+  public ALStringField getDefaultHolidayFlag() {
+    return default_holiday_flag;
+  }
+
+  public ALStringField getWeek1() {
+    return week1;
+  }
+
+  public ALStringField getWeek2() {
+    return week2;
+  }
+
+  public ALStringField getWeek3() {
+    return week3;
+  }
+
+  public ALStringField getWeek4() {
+    return week4;
+  }
+
+  public ALStringField getWeek5() {
+    return week5;
+  }
+
+  public ALStringField getWeek6() {
+    return week6;
+  }
+
+  public ALStringField getWeek7() {
+    return week7;
+  }
+
+  public ALStringField getStatutoryHoliday() {
+    return statutoryHoliday;
+  }
+
+  public ALStringField getHoliday() {
+    return holiday;
+  }
+
   public void setUserId(int i) {
     user_id.setValue(i);
   }
@@ -241,6 +313,46 @@ public class ExtTimecardSystemDetailResultData extends
     overtime_type_hour_by_week.setValue(value);
   }
 
+  public void setDefaultHolidayFlag(String str) {
+    default_holiday_flag.setValue(str);
+  }
+
+  public void setWeek1(String str) {
+    week1.setValue(str);
+  }
+
+  public void setWeek2(String str) {
+    week2.setValue(str);
+  }
+
+  public void setWeek3(String str) {
+    week3.setValue(str);
+  }
+
+  public void setWeek4(String str) {
+    week4.setValue(str);
+  }
+
+  public void setWeek5(String str) {
+    week5.setValue(str);
+  }
+
+  public void setWeek6(String str) {
+    week6.setValue(str);
+  }
+
+  public void setWeek7(String str) {
+    week7.setValue(str);
+  }
+
+  public void setStatutoryHoliday(String str) {
+    statutoryHoliday.setValue(str);
+  }
+
+  public void setHoliday(String str) {
+    holiday.setValue(str);
+  }
+
   /**
    * @return isOvertypeWeek
    */
@@ -254,6 +366,21 @@ public class ExtTimecardSystemDetailResultData extends
    */
   public void setOvertypeWeek(boolean isOvertypeWeek) {
     this.isOvertypeWeek = isOvertypeWeek;
+  }
+
+  /**
+   * @return hasHoliday
+   */
+  public boolean getHasHoliday() {
+    return hasHoliday;
+  }
+
+  /**
+   * @param hasHoliday
+   *          セットする hasHoliday
+   */
+  public void setHasHoliday(boolean hasHoliday) {
+    this.hasHoliday = hasHoliday;
   }
 
 }

@@ -90,13 +90,14 @@ public class ExtTimecardListResultDataContainer implements ALData {
     }
     Calendar cal = Calendar.getInstance();
     cal.setTime(rd.getRd().getPunchDate().getValue());
-    int statutoryHoliday = ExtTimecardUtils.getStatutoryHoliday();
+    int statutoryHoliday = ExtTimecardUtils.getStatutoryHoliday(timecardSystem);
     if (statutoryHoliday > 0) {
       return statutoryHoliday == cal.get(Calendar.DAY_OF_WEEK);
     } else {
       int weekOfMonth = getWeekOfMonth(rd.getRd().getPunchDate().getValue());
       Map<Integer, ExtTimecardListResultData> map = list.get(weekOfMonth);
-      List<Integer> offdayDayOfWeek = ExtTimecardUtils.getOffdayDayOfWeek();
+      List<Integer> offdayDayOfWeek =
+        ExtTimecardUtils.getOffdayDayOfWeek(timecardSystem);
       boolean allWork = true;
       int last = -1;
       for (int dayOfWeek : offdayDayOfWeek) {
@@ -173,8 +174,8 @@ public class ExtTimecardListResultDataContainer implements ALData {
       if (timecardSystem == null) {
         continue;
       }
-      if (!ExtTimecardUtils.isOvertimeHourByWeek(timecardSystem
-        .getOvertimeType())) {
+      if (!ExtTimecardUtils.isOvertimeHourByWeek(
+        timecardSystem.getOvertimeType())) {
         continue;
       }
       float weekLimit = ExtTimecardUtils.getOvertimeHourByWeek(timecardSystem);

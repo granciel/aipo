@@ -57,12 +57,52 @@ ${result.Detail.StartDay}$l10n.EXTTIMECARD_DAY
 #if($!result.isNewRule())
 	$l10n.EXTTIMECARD_OVERTIME_TYPE_DAY1$!{result.Detail.OvertimeTypeMinuteByDay}$l10n.EXTTIMECARD_OVERTIME_TYPE_DAY2<br/>
   ##   #if($result.Detail.isOvertypeWeek())
-	## $l10n.EXTTIMECARD_OVERTIME_TYPE_WEEK1$!{result.Detail.OvertimeTypeHourByWeek}$l10n.EXTTIMECARD_OVERTIME_TYPE_WEEK2<br/>
+  ## $l10n.EXTTIMECARD_OVERTIME_TYPE_WEEK1$!{result.Detail.OvertimeTypeHourByWeek}$l10n.EXTTIMECARD_OVERTIME_TYPE_WEEK2<br/>
   ##   #end
 #else
 $l10n.EXTTIMECARD_OVERTIME_TYPE_O
 #end
 #ALtditemfooter()
+#ALtdcaption($l10n.EXTTIMECARD_HOLIDAY)
+#ALtditemheader()
+#if($!result.Detail.DefaultHolidayFlag.toString() == "A") $l10n.EXTTIMECARD_HOLIDAY_SETTING_DEFAULT_HOLIDAY
+#end
+<div id="holidayField" style="display:#if ($!result.Detail.DefaultHolidayFlag.toString() == "A") none #end">
+  <h3 class="mb5">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK_OF_DAY</h3>
+  <p>
+  	#if($!result.Detail.getHasHoliday())
+        #if($!result.Detail.Week1.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK1 #end
+        #if($!result.Detail.Week2.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK2 #end
+        #if($!result.Detail.Week3.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK3 #end
+        #if($!result.Detail.Week4.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK4 #end
+        #if($!result.Detail.Week5.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK5 #end
+        #if($!result.Detail.Week6.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK6 #end
+        #if($!result.Detail.Week7.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK7 #end
+    #else
+        $l10n.EXTTIMECARD_HOLIDAY_SETTING_NOTHING
+    #end
+  </p>
+  <h3 class="mb5">$l10n.EXTTIMECARD_HOLIDAY_SETTING_STATUTORY_HOLIDAY</h3>
+  <p>
+    #if($!result.Detail.StatutoryHoliday.toString() == "0") $l10n.EXTTIMECARD_HOLIDAY_SETTING_NOTHING
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "1")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK1
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "2")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK2
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "3")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK3
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "4")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK4
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "5")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK5
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "6")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK6
+    #elseif($!result.Detail.StatutoryHoliday.toString() == "7")$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK7
+    #end
+  </p>
+  <h3 class="mb5">$l10n.EXTTIMECARD_HOLIDAY_SETTING_HOLIDAY</h3>
+  <p>
+    #if($!result.Detail.Holiday.toString() == "1") $l10n.EXTTIMECARD_HOLIDAY_NATIONAL_HOLIDAY_ON
+    #else $l10n.EXTTIMECARD_HOLIDAY_NATIONAL_HOLIDAY_OFF
+    #end
+  </p>
+</div>
+#ALtditemfooter()
+
 #ALtablefooter()
 #ALbuttonheader()
 #if($!{result.PortletName} == "ExtTimecardSystem")

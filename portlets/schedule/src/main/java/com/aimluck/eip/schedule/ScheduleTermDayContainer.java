@@ -24,10 +24,11 @@ import com.aimluck.commons.field.ALDateTimeField;
 import com.aimluck.eip.common.ALData;
 import com.aimluck.eip.common.ALEipHolidaysManager;
 import com.aimluck.eip.common.ALHoliday;
+import com.aimluck.eip.schedule.util.ScheduleUtils;
 
 /**
  * 期間スケジュールコンテナです。
- * 
+ *
  */
 public class ScheduleTermDayContainer implements ALData {
 
@@ -48,8 +49,9 @@ public class ScheduleTermDayContainer implements ALData {
   private ALHoliday holiday;
 
   /*
-   * 
+   *
    */
+  @Override
   public void initField() {
     today = new ALDateTimeField("yyyy-MM-dd-HH-mm");
     termRd = null;
@@ -57,7 +59,7 @@ public class ScheduleTermDayContainer implements ALData {
 
   /**
    * 日付を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getDate() {
@@ -66,7 +68,7 @@ public class ScheduleTermDayContainer implements ALData {
 
   /**
    * 日付を設定します。
-   * 
+   *
    * @param date
    */
   public void setDate(Date date) {
@@ -79,7 +81,7 @@ public class ScheduleTermDayContainer implements ALData {
 
   /**
    * 期間スケジュールを追加します。
-   * 
+   *
    * @param rd
    */
   public void setTermResultData(ScheduleResultData rd) {
@@ -88,7 +90,7 @@ public class ScheduleTermDayContainer implements ALData {
 
   /**
    * 祝日かどうかを検証する． 祝日の場合，true．
-   * 
+   *
    * @return
    */
   public boolean isHoliday() {
@@ -97,7 +99,7 @@ public class ScheduleTermDayContainer implements ALData {
 
   /**
    * 祝日情報を取得する．
-   * 
+   *
    * @return
    */
   public ALHoliday getHoliday() {
@@ -105,8 +107,22 @@ public class ScheduleTermDayContainer implements ALData {
   }
 
   /**
+   * 祝日を休日にするかどうかを検証する. 休日にする場合 ture
+   */
+  public boolean isDayOffHoliday() {
+    return ScheduleUtils.isDayOffHoliday();
+  }
+
+  /**
+   * 休日かどうかを判定する 休日の場合 ture
+   */
+  public boolean isUserHoliday(int DayOfWeek) {
+    return ScheduleUtils.isUserHoliday(DayOfWeek);
+  }
+
+  /**
    * 期間スケジュールを取得します。
-   * 
+   *
    * @return
    */
   public ScheduleResultData getTermResultData() {
@@ -123,7 +139,7 @@ public class ScheduleTermDayContainer implements ALData {
 
   /**
    * 期間スケジュールがNULLかどうか。
-   * 
+   *
    * @return
    */
   public boolean isTermNull() {

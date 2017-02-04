@@ -49,6 +49,7 @@ import com.aimluck.eip.fileupload.util.FileuploadUtils;
 import com.aimluck.eip.fileupload.util.FileuploadUtils.ShrinkImageSet;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.orm.Database;
+import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.eventlog.ALEventlogConstants;
 import com.aimluck.eip.services.eventlog.ALEventlogFactoryService;
 import com.aimluck.eip.services.storage.ALStorageService;
@@ -78,7 +79,7 @@ public class TimelineFormData extends ALAbstractFormData {
 
   private String orgId;
 
-  private String aclPortletFeature = null;
+  private String aclPortletFeature;
 
   /** 閲覧権限の有無 */
   @SuppressWarnings("unused")
@@ -116,6 +117,35 @@ public class TimelineFormData extends ALAbstractFormData {
     orgId = Database.getDomainName();
     has_photo = false;
     folderName = rundata.getParameters().getString("folderName");
+
+    String mode = rundata.getParameters().getString("mode");
+
+    if (ALEipConstants.MODE_INSERT.equals(mode)) {
+      aclPortletFeature =
+        ALAccessControlConstants.POERTLET_FEATURE_TIMELINE_POST;
+
+    } else if (mode.equals("comment")) {
+      aclPortletFeature =
+        ALAccessControlConstants.POERTLET_FEATURE_TIMELINE_COMMENT;
+    } else if (ALEipConstants.MODE_DELETE.equals(mode)) {
+      int entityid =
+        Integer.parseInt(ALEipUtils.getTemp(
+          rundata,
+          context,
+          ALEipConstants.ENTITY_ID));
+      EipTTimeline timeline = Database.get(EipTTimeline.class, (long) entityid);
+      if (uid != timeline.getOwnerId()) {
+        aclPortletFeature =
+          ALAccessControlConstants.POERTLET_FEATURE_TIMELINE_POST_OTHER;
+      } else if (timeline.getParentId() != 0
+        && "T".equals(timeline.getTimelineType())) {
+        aclPortletFeature =
+          ALAccessControlConstants.POERTLET_FEATURE_TIMELINE_COMMENT;
+      } else {
+        aclPortletFeature =
+          ALAccessControlConstants.POERTLET_FEATURE_TIMELINE_POST;
+      }
+    }
 
   }
 

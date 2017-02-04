@@ -371,9 +371,9 @@ public class ExtTimecardUtils {
    *
    * @return
    */
-  public static List<Integer> getOffdayDayOfWeek() {
+  public static List<Integer> getOffdayDayOfWeek(EipTExtTimecardSystem model) {
     List<Integer> list = new ArrayList<Integer>();
-    String week = getHolidayOfWeek();
+    String week = getHolidayOfWeek(model);
     // 標準は日・土
     if (week.charAt(0) != '0') {
       list.add(Calendar.SUNDAY);
@@ -404,8 +404,8 @@ public class ExtTimecardUtils {
    *
    * @return
    */
-  public static int getStatutoryHoliday() {
-    String week = getHolidayOfWeek();
+  public static int getStatutoryHoliday(EipTExtTimecardSystem model) {
+    String week = getHolidayOfWeek(model);
     try {
       return Character.getNumericValue(week.charAt(7));
     } catch (Throwable ignore) {
@@ -524,31 +524,35 @@ public class ExtTimecardUtils {
     return false;
   }
 
-  public static String getHolidayOfWeek() {
-    HttpServletRequest request = HttpServletRequestLocator.get();
-    String cacheHoliday = null;
-    if (request != null) {
-      try {
-        cacheHoliday =
-          (String) request
-            .getAttribute(ALConfigHandler.Property.HOLIDAY_OF_WEEK.toString());
-      } catch (Throwable ignore) {
-
-      }
-    }
-    if (cacheHoliday == null) {
-      cacheHoliday =
-        ALConfigService.get(ALConfigHandler.Property.HOLIDAY_OF_WEEK);
+  public static String getHolidayOfWeek(EipTExtTimecardSystem model) {
+    if (model.isDefaultHoliday()) {
+      HttpServletRequest request = HttpServletRequestLocator.get();
+      String cacheHoliday = null;
       if (request != null) {
-        request.setAttribute(ALConfigHandler.Property.HOLIDAY_OF_WEEK
-          .toString(), cacheHoliday);
+        try {
+          cacheHoliday =
+            (String) request
+              .getAttribute(ALConfigHandler.Property.HOLIDAY_OF_WEEK.toString());
+        } catch (Throwable ignore) {
+
+        }
       }
+      if (cacheHoliday == null) {
+        cacheHoliday =
+          ALConfigService.get(ALConfigHandler.Property.HOLIDAY_OF_WEEK);
+        if (request != null) {
+          request.setAttribute(ALConfigHandler.Property.HOLIDAY_OF_WEEK
+            .toString(), cacheHoliday);
+        }
+      }
+      return cacheHoliday;
+    } else {
+      return model.getOriginalHolidayOfWeek();
     }
-    return cacheHoliday;
   }
 
-  public static boolean isHoliday(Date date) {
-    String cacheHoliday = getHolidayOfWeek();
+  public static boolean isHoliday(EipTExtTimecardSystem model, Date date) {
+    String cacheHoliday = getHolidayOfWeek(model);
     boolean holiday = cacheHoliday.charAt(8) != '0';
     if (holiday) {
       ALEipHolidaysManager holidaysManager = ALEipHolidaysManager.getInstance();

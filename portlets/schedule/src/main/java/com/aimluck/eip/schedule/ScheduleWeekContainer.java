@@ -28,7 +28,7 @@ import com.aimluck.eip.schedule.util.ScheduleUtils;
 
 /**
  * 週間スケジュールのコンテナです。
- * 
+ *
  */
 public class ScheduleWeekContainer implements ALData {
 
@@ -36,15 +36,16 @@ public class ScheduleWeekContainer implements ALData {
   private List<ScheduleDayContainer> dayList;
 
   /*
-   * 
+   *
    */
+  @Override
   public void initField() {
     dayList = new ArrayList<ScheduleDayContainer>();
   }
 
   /**
    * 表示開始する日付を設定します。
-   * 
+   *
    * @param cal
    */
   public void setViewStartDate(Calendar cal) {
@@ -60,7 +61,7 @@ public class ScheduleWeekContainer implements ALData {
 
   /**
    * スケジュールをコンテナに格納します。
-   * 
+   *
    * @param rd
    */
   public boolean addResultData(ScheduleResultData rd) {
@@ -124,7 +125,7 @@ public class ScheduleWeekContainer implements ALData {
 
   /**
    * 期間スケジュールをコンテナに格納します。
-   * 
+   *
    * @param rd
    */
 
@@ -138,7 +139,7 @@ public class ScheduleWeekContainer implements ALData {
 
   /**
    * スケジュールリストを取得します。
-   * 
+   *
    * @return
    */
   public List<ScheduleDayContainer> getDayList() {

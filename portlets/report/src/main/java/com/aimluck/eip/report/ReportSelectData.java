@@ -103,6 +103,12 @@ public class ReportSelectData extends
   /** 他ユーザーの報告書の閲覧権限 */
   private boolean hasAuthorityOther;
 
+  /** 他ユーザの報告書の削除権限　 */
+  private boolean hasAuthorityDelete;
+
+  /** 他ユーザの報告書の編集権限 */
+  private boolean hasAuthorityUpdate;
+
   /** 検索ワード */
   private ALStringField target_keyword;
 
@@ -194,6 +200,18 @@ public class ReportSelectData extends
         ALEipUtils.getUserId(rundata),
         ALAccessControlConstants.POERTLET_FEATURE_REPORT_OTHER,
         ALAccessControlConstants.VALUE_ACL_LIST);
+
+    hasAuthorityDelete =
+      aclhandler.hasAuthority(
+        ALEipUtils.getUserId(rundata),
+        ALAccessControlConstants.POERTLET_FEATURE_REPORT_OTHER,
+        ALAccessControlConstants.VALUE_ACL_DELETE);
+
+    hasAuthorityUpdate =
+      aclhandler.hasAuthority(
+        ALEipUtils.getUserId(rundata),
+        ALAccessControlConstants.POERTLET_FEATURE_REPORT_OTHER,
+        ALAccessControlConstants.VALUE_ACL_UPDATE);
 
     // My グループの一覧を取得する．
     postList = ALEipUtils.getMyGroups(rundata);
@@ -774,6 +792,14 @@ public class ReportSelectData extends
 
   public boolean hasAuthorityOther() {
     return hasAuthorityOther;
+  }
+
+  public boolean hasAuthorityDelete() {
+    return hasAuthorityDelete;
+  }
+
+  public boolean hasAuthorityUpdate() {
+    return hasAuthorityUpdate;
   }
 
   /**

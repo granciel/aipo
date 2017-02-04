@@ -204,6 +204,13 @@ public class ScheduleMonthlySelectData extends AjaxScheduleMonthlySelectData {
     today.setValue(to.getTime());
     currentMonth.setValue(to.getTime());
 
+    // 週の始まり
+    startDayOfWeek =
+      Integer.parseInt(ALEipUtils
+        .getPortlet(rundata, context)
+        .getPortletConfig()
+        .getInitParameter("z1a-rows"));
+
     // 自ポートレットからのリクエストであれば、パラメータを展開しセッションに保存する。
     if (ALEipUtils.isMatch(rundata, context)) {
       // スケジュールの表示開始日時
@@ -248,36 +255,32 @@ public class ScheduleMonthlySelectData extends AjaxScheduleMonthlySelectData {
 
     // 表示開始日時
     Calendar cal = Calendar.getInstance();
-    Calendar tmpCal = Calendar.getInstance();
     cal.setTime(viewMonth.getValue());
-    tmpCal.setTime(viewMonth.getValue());
-    int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
-    cal.add(Calendar.DATE, -dayofweek + 1);
+    // 週の始まり（月間）の設定に応じて表示開始日時を変更する
+    shiftCalToMatchStartDayOfWeek(cal, startDayOfWeek);
+
     viewStart.setValue(cal.getTime());
 
     Calendar cal4 = Calendar.getInstance();
     cal4.setTime(cal.getTime());
-    Calendar tmpCal4 = Calendar.getInstance();
-    tmpCal4.setTime(tmpCal.getTime());
 
     Calendar cal5 = Calendar.getInstance();
     cal5.setTime(cal.getTime());
-    Calendar tmpCal5 = Calendar.getInstance();
-    tmpCal5.setTime(tmpCal.getTime());
 
     // 月間スケジュールコンテナの初期化
+
     try {
       termMonthCon = new ScheduleTermMonthContainer();
       termMonthCon.initField();
-      termMonthCon.setViewMonth(cal4, tmpCal4);
+      termMonthCon.setViewMonth(cal4);
 
       monthCon = new ScheduleMonthContainer();
       monthCon.initField();
-      monthCon.setViewMonth(cal, tmpCal);
+      monthCon.setViewMonth(cal);
 
       monthTodoCon = new ScheduleToDoMonthContainer();
       monthTodoCon.initField();
-      monthTodoCon.setViewMonth(cal5, tmpCal5);
+      monthTodoCon.setViewMonth(cal5);
     } catch (Exception e) {
       logger.error("schedule", e);
     }
@@ -1331,6 +1334,10 @@ public class ScheduleMonthlySelectData extends AjaxScheduleMonthlySelectData {
    */
   public void setUser(ALEipUser user) {
     this.user = user;
+  }
+
+  public boolean isHoliday(int DayOfWeek) {
+    return ScheduleUtils.isUserHoliday(DayOfWeek);
   }
 
 }

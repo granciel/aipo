@@ -29,7 +29,7 @@ import com.aimluck.eip.schedule.util.ScheduleUtils;
 
 /**
  * 月間スケジュールに表示されるTodoコンテナを取得します。
- * 
+ *
  */
 public class ScheduleToDoMonthContainer implements ALData {
 
@@ -39,26 +39,27 @@ public class ScheduleToDoMonthContainer implements ALData {
   private Calendar viewStartCal;
 
   /*
-   * 
+   *
    */
+  @Override
   public void initField() {
     map = new LinkedHashMap<Integer, List<ScheduleToDoWeekContainer>>();
   }
 
   /**
    * 表示する月を設定します。
-   * 
+   *
    * @param cal
    */
-  public void setViewMonth(Calendar cal, Calendar vcal) {
+  public void setViewMonth(Calendar cal) {
     List<ScheduleToDoWeekContainer> weekList;
     viewStartCal = Calendar.getInstance();
     viewStartCal.setTime(cal.getTime());
     for (int i = 1; i <= 6; i++) {
-      if ((i == 5 || i == 6)
-        && (cal.get(Calendar.MONTH) != vcal.get(Calendar.MONTH))) {
-        break;
-      }
+      // if ((i == 5 || i == 6)
+      // && (cal.get(Calendar.MONTH) != vcal.get(Calendar.MONTH))) {
+      // break;
+      // }
       weekList = new ArrayList<ScheduleToDoWeekContainer>();
       map.put(Integer.valueOf(i - 1), weekList);
       // 一週間ずらす
@@ -68,7 +69,7 @@ public class ScheduleToDoMonthContainer implements ALData {
 
   /**
    * ToDo を追加します。
-   * 
+   *
    * @param count
    * @param rd
    */
@@ -88,7 +89,7 @@ public class ScheduleToDoMonthContainer implements ALData {
 
   /**
    * ToDo コンテナを取得します。
-   * 
+   *
    * @param id
    * @return
    */

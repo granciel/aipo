@@ -49,8 +49,8 @@ import com.aimluck.eip.util.ALEipUtils;
 public class ScheduleScreen extends ALVelocityScreen {
 
   /** logger */
-  private static final JetspeedLogger logger = JetspeedLogFactoryService
-    .getLogger(ScheduleScreen.class.getName());
+  private static final JetspeedLogger logger =
+    JetspeedLogFactoryService.getLogger(ScheduleScreen.class.getName());
 
   /**
    *
@@ -98,6 +98,11 @@ public class ScheduleScreen extends ALVelocityScreen {
         display_month = "detail";
       }
       context.put("display_month", display_month);
+
+      // 週始まりを取得する
+      String startDayOfWeek =
+        portlet.getPortletConfig().getInitParameter("z1a-rows");
+      context.put("startDayOfWeek", startDayOfWeek);
 
       // アクセスコントロール
       String has_acl_other = ScheduleUtils.hasAuthOther(rundata);
@@ -183,8 +188,8 @@ public class ScheduleScreen extends ALVelocityScreen {
           List<UserFacilityLiteBean> ulist;
           if ("F".equals(has_acl_other)) {
             ulist = ScheduleUtils.getALEipFacility(selected_users, rundata);
-            if (selected_user.contains(String.valueOf(ALEipUtils
-              .getUserId(rundata)))) {
+            if (selected_user.contains(
+              String.valueOf(ALEipUtils.getUserId(rundata)))) {
               UserFacilityLiteBean login_user =
                 UserFacilityUtils.getUserFacilityLiteBean(rundata);
               ulist.add(login_user);

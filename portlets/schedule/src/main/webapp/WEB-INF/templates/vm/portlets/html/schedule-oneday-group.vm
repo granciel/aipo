@@ -214,6 +214,7 @@ ${record.TodoName}
 #set($todorestcount = $todocolcount - $userTodoCount)
 #ALtdcellAtt("" "colspan='1'rowspan='$duplirowmax'")
 #end
+
 ### 期間スケジュール（ここから） ###
 #set($userTermCount = $result.getTermResultDataList($record3.UserId.Value).size())
 #if($userTermCount > 0)

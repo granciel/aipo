@@ -272,6 +272,7 @@
 		<db-attribute name="CREATE_DATE" type="DATE" length="4"/>
 		<db-attribute name="END_HOUR" type="INTEGER" length="2"/>
 		<db-attribute name="END_MINUTE" type="INTEGER" length="2"/>
+		<db-attribute name="HOLIDAY_OF_WEEK" type="VARCHAR" length="32"/>
 		<db-attribute name="OUTGOING_ADD_FLAG" type="VARCHAR" length="1"/>
 		<db-attribute name="OVERTIME_TYPE" type="VARCHAR" length="8"/>
 		<db-attribute name="RESTTIME_IN" type="INTEGER" length="4"/>
@@ -1072,6 +1073,7 @@
 		<obj-attribute name="createDate" type="java.util.Date" db-attribute-path="CREATE_DATE"/>
 		<obj-attribute name="endHour" type="java.lang.Integer" db-attribute-path="END_HOUR"/>
 		<obj-attribute name="endMinute" type="java.lang.Integer" db-attribute-path="END_MINUTE"/>
+		<obj-attribute name="holidayOfWeek" type="java.lang.String" db-attribute-path="HOLIDAY_OF_WEEK"/>
 		<obj-attribute name="outgoingAddFlag" type="java.lang.String" db-attribute-path="OUTGOING_ADD_FLAG"/>
 		<obj-attribute name="overtimeType" type="java.lang.String" db-attribute-path="OVERTIME_TYPE"/>
 		<obj-attribute name="resttimeIn" type="java.lang.Integer" db-attribute-path="RESTTIME_IN"/>

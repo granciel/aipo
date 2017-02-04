@@ -52,7 +52,7 @@ import com.aimluck.eip.util.ALLocalizationUtils;
 
 /**
  * 週間スケジュールの検索結果を管理するクラスです。
- * 
+ *
  */
 public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
@@ -126,7 +126,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   }
 
   /**
-   * 
+   *
    * @param action
    * @param rundata
    * @param context
@@ -271,7 +271,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   }
 
   /**
-   * 
+   *
    * @param rundata
    * @param context
    * @return
@@ -305,7 +305,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 検索条件を設定した SelectQuery を返します。
-   * 
+   *
    * @param rundata
    * @param context
    * @return
@@ -353,7 +353,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   }
 
   /**
-   * 
+   *
    * @param record
    * @return
    * @throws ALPageNotFoundException
@@ -435,7 +435,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   }
 
   /**
-   * 
+   *
    * @param rundata
    * @param context
    * @return
@@ -446,7 +446,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   }
 
   /**
-   * 
+   *
    * @param obj
    * @return
    */
@@ -456,7 +456,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   }
 
   /**
-   * 
+   *
    * @return
    */
   @Override
@@ -581,7 +581,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 表示開始日時を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getViewStart() {
@@ -590,7 +590,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 表示終了日時を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getViewEnd() {
@@ -599,7 +599,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 表示タイプを取得します。
-   * 
+   *
    * @return
    */
   public String getViewtype() {
@@ -608,7 +608,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 表示終了日時 (Criteria) を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getViewEndCrt() {
@@ -617,7 +617,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 前の日を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getPrevDate() {
@@ -626,7 +626,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 前の週を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getPrevWeek() {
@@ -635,7 +635,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 次の日を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getNextDate() {
@@ -644,7 +644,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 次の週を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getNextWeek() {
@@ -653,7 +653,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 今日を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getToday() {
@@ -662,7 +662,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 先月を取得する．
-   * 
+   *
    * @return
    */
   public ALDateTimeField getPrevMonth() {
@@ -671,7 +671,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 来月を取得する．
-   * 
+   *
    * @return
    */
   public ALDateTimeField getNextMonth() {
@@ -680,7 +680,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 期間スケジュールコンテナを取得します。
-   * 
+   *
    * @return
    */
   public List<ScheduleTermWeekContainer> getTermContainer() {
@@ -689,7 +689,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
 
   /**
    * 週間スケジュールコンテナを取得します。
-   * 
+   *
    * @return
    */
   public ScheduleWeekContainer getContainer() {
@@ -707,7 +707,7 @@ public class ScheduleWeeklySelectData extends AjaxScheduleMonthlySelectData {
   /**
    * アクセス権限チェック用メソッド。<br />
    * アクセス権限の機能名を返します。
-   * 
+   *
    * @return
    */
   @Override

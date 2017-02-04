@@ -65,8 +65,8 @@
 <div class="count"><strong>$!{result.ViewMonthText}</strong></div>
 </div>
 </div>
-
 </div>
+
 ##<div class="indicator" id="indicator-$!portlet.ID" style="display:none">$l10n.SCHEDULE_READING</div>
 <div class="center loader" id="indicator-$!portlet.ID" style="display:none"><i class="indicator"></i></div>
 <div id="content-$!portlet.ID" style="visibility:visible">
@@ -123,25 +123,30 @@
 #else
 #ALtableheaderCalendarAtt("100%" "calendarDisplayMonth")
 #end
+
 <tr>
-#foreach($test in ["$l10n.SCHEDULE_SUNDAY","$l10n.SCHEDULE_MONDAY","$l10n.SCHEDULE_TUSEDAY","$l10n.SCHEDULE_WEDNESDAY","$l10n.SCHEDULE_THURSDAY","$l10n.SCHEDULE_FRIDAY","$l10n.SCHEDULE_SATURDAY"])
-<th #if($velocityCount==1) class='sunday' #elseif($velocityCount==7) class='saturday' #end style="width:14.3%" nowrap="nowrap">$test</th>
-#end
+	#foreach($dayOfWeekStr in  $!{result.WeekRevised})
+		<th #if($result.isHoliday($dayOfWeekStr)) class='holiday' #end style="width:14.3%" nowrap="nowrap">$dayOfWeekStr</th>
+	#end
 </tr>
+
 #set($entityids = "")
 #set($weekListSize = $result.Container.WeekList.size())
 #set($weekcount = 0)
+
 #foreach($record4 in $result.Container.WeekList)
 #if($!{result.TermContainer.getWeekList($weekcount)})
 	#set($termConListSize = ${result.TermContainer.getWeekList($weekcount).size()})
 #else
 	#set($termConListSize = 0)
 #end
+
 #if($!{result.ToDoContainer.getWeekList($weekcount)})
 #set($todoConList = $!{result.ToDoContainer.getWeekList($weekcount)})
 #if($!todoConList) #set($todoConListSize = $!{todoConList.size()}) #else #set($todoConListSize = 0) #end
 #else #set($todoConListSize = 0)
 #end
+
 <tr>
 #foreach($record in $record4.DayList)
 #set($getScheduleDetailLink = $!jslink.getPortletById($!portlet.ID).addQueryData('template','ScheduleDetailJSONScreen').addQueryData('view_date', $!{record.Date.toString()}))
@@ -151,13 +156,17 @@
 #set ($holiday_name = "")
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
-#end
-#if($!{record.isHoliday()})
+##ユーザーが設定した休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
 #set ($color_style_holiday = " holiday")
+
+#end
+##祝日を休日にする設定かつ祝日
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
+#set ($color_style_holiday = " holiday")
+#set ($holiday_name = "${record.Holiday.Name}")
+##祝日
+#elseif($!{record.isHoliday()})
 #set ($holiday_name = "${record.Holiday.Name}")
 #end
 #if(! ($!{result.ViewMonth.Month.toString()} == ${record.Date.Month.toString()}))
@@ -170,6 +179,7 @@
 </td>
 #end
 </tr>
+
 ### 期間スケジュール（ここから） ###
 #set($col_span = 0)
 #if($termConListSize > 0)
@@ -185,12 +195,12 @@
 #end
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
+
+##ユーザーが設定した休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($color_style_holiday = " holiday")
 #end
-#if($!{record.isHoliday()})
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #end
 #if(! ($!{result.ViewMonth.Month.toString()} == ${record.Date.Month.toString()}))
@@ -199,7 +209,6 @@
 #if( ! $record.isTermNull() )
 #set($entityids = "$!{entityids}$!{record.TermResultData.ScheduleId},")
 ##if($record.TermResultData.isShowDetail())
-
 #set($addScheduleLink = "$!jslink.getPortletById($!portlet.ID).addQueryData('template','ScheduleDetailScreen').addQueryData('entityid',$!{record.TermResultData.ScheduleId}).addQueryData('userid', $!{result.TargetUserId}).addQueryData('view_date', $!{record.Date.toString()})")
 <td colspan="$col_span" class="term">
 #if(${record.TermResultData.isShowDetail()})
@@ -230,6 +239,7 @@
 #foreach($todocontainer in ${result.ToDoContainer.getWeekList($weekcount)})
 <tr>
 #set($nottodocount = 0)
+
 #foreach($record in $todocontainer.DayList)
 #set ($color_style = "")
 #set ($color_style_holiday = "")
@@ -239,12 +249,12 @@
 #end
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
+##ユーザーが設定した休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($color_style_holiday = " holiday")
+
 #end
-#if($!{record.isHoliday()})
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #end
 #if(! ($!{result.ViewMonth.Month.toString()} == ${record.Date.Month.toString()}))
@@ -265,9 +275,11 @@ $!{record.ToDoResultData.TodoName}
 ##end
 #set ($col_span = $col_span - 1)
 #end
+
 </tr>
 #end
 #end
+
 <tr>
 #foreach($record in $record4.DayList)
 #set ($color_style = "")
@@ -276,19 +288,22 @@ $!{record.ToDoResultData.TodoName}
 #set ($holiday_name = "")
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
+##ユーザーが設定した休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($color_style_holiday = " holiday")
 #end
-#if($!{record.isHoliday()})
+
+##祝日を休日にする設定でありかつ祝日である場合
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #set ($holiday_name = "${record.Holiday.Name}")
+#elseif($!{record.isHoliday()})
+#set ($holiday_name = "${record.Holiday.Name}")
+
 #end
 #if(! ($!{result.ViewMonth.Month.toString()} == ${record.Date.Month.toString()}))
 #set ($color_style_othermonth = " off")
 #end
-
 #if($result.TargetUserId.startsWith('f'))
 #set($addScheduleLink = "$!jslink.getPortletById($!portlet.ID).addQueryData('template','ScheduleFormScreen').addQueryData('entityid','new').addQueryData('form_start', $!{record.Date.toString()}).addQueryData('form_end', $!{record.Date.toString()}).addQueryData('facility_to', $result.TargetUserId.substring(1))")
 #elseif(($result.UserId != $result.TargetUserId) && $result.TargetUserName)
@@ -301,6 +316,7 @@ $!{record.ToDoResultData.TodoName}
 #else
 <td class="topNone${color_style}${color_style_holiday}${color_style_othermonth}">
 #end
+
 #if($record.ScheduleList.size() <= 0)
 <div class="calendarBody">
 <div class="calendarScheduleDiv"></div>
@@ -344,13 +360,12 @@ $!{record.ToDoResultData.TodoName}
 #end
 </tr>
 
-
-
 #set($weekcount = $weekcount + 1)
 #end
 #ALtablefooterCalendar()
 #end
 </div>
+
 
 #if($!ajax_onloadimage)
   <img src="images/common/dot.gif" width="1" height="1" onload="aipo.schedule.setupTooltip('$!{getScheduleDetailLink}', '$!entityids', '$!portlet.ID');ptConfig['$!portlet.ID'].reloadFunction = aipo.reloadPage;" />

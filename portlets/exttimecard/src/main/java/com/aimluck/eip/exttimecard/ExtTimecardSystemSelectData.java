@@ -141,6 +141,23 @@ public class ExtTimecardSystemSelectData extends
           .getOvertimeType()));
       }
 
+      rd.setDefaultHolidayFlag(String.valueOf(record.getHolidayOfWeek().charAt(
+        0)));
+      if (!"A".equals(rd.getDefaultHolidayFlag().toString())) {
+        rd.setWeek1(record.getHolidayOfWeek().charAt(1) != '0' ? "1" : null);
+        rd.setWeek2(record.getHolidayOfWeek().charAt(2) != '0' ? "1" : null);
+        rd.setWeek3(record.getHolidayOfWeek().charAt(3) != '0' ? "1" : null);
+        rd.setWeek4(record.getHolidayOfWeek().charAt(4) != '0' ? "1" : null);
+        rd.setWeek5(record.getHolidayOfWeek().charAt(5) != '0' ? "1" : null);
+        rd.setWeek6(record.getHolidayOfWeek().charAt(6) != '0' ? "1" : null);
+        rd.setWeek7(record.getHolidayOfWeek().charAt(7) != '0' ? "1" : null);
+        rd
+          .setHasHoliday(record.getHolidayOfWeek().substring(1, 8).indexOf("1") != -1);
+        rd.setStatutoryHoliday(String.valueOf(record.getHolidayOfWeek().charAt(
+          8)));
+        rd.setHoliday(record.getHolidayOfWeek().charAt(9) != '0' ? "1" : null);
+      }
+
       return rd;
     } catch (Exception ex) {
       logger.error("exttimecard", ex);
@@ -182,6 +199,23 @@ public class ExtTimecardSystemSelectData extends
           .getOvertimeHourByWeek(record.getOvertimeType()));
         rd.setOvertypeWeek(ExtTimecardUtils.isOvertimeHourByWeek(record
           .getOvertimeType()));
+      }
+
+      rd.setDefaultHolidayFlag(String.valueOf(record.getHolidayOfWeek().charAt(
+        0)));
+      if (!"A".equals(rd.getDefaultHolidayFlag().toString())) {
+        rd.setWeek1(record.getHolidayOfWeek().charAt(1) != '0' ? "1" : null);
+        rd.setWeek2(record.getHolidayOfWeek().charAt(2) != '0' ? "1" : null);
+        rd.setWeek3(record.getHolidayOfWeek().charAt(3) != '0' ? "1" : null);
+        rd.setWeek4(record.getHolidayOfWeek().charAt(4) != '0' ? "1" : null);
+        rd.setWeek5(record.getHolidayOfWeek().charAt(5) != '0' ? "1" : null);
+        rd.setWeek6(record.getHolidayOfWeek().charAt(6) != '0' ? "1" : null);
+        rd.setWeek7(record.getHolidayOfWeek().charAt(7) != '0' ? "1" : null);
+        rd
+          .setHasHoliday(record.getHolidayOfWeek().substring(1, 8).indexOf("1") != -1);
+        rd.setStatutoryHoliday(String.valueOf(record.getHolidayOfWeek().charAt(
+          8)));
+        rd.setHoliday(record.getHolidayOfWeek().charAt(9) != '0' ? "1" : null);
       }
 
       return rd;

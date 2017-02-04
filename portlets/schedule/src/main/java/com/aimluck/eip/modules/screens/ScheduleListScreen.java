@@ -49,8 +49,8 @@ import com.aimluck.eip.util.ALEipUtils;
 public class ScheduleListScreen extends ScheduleScreen {
 
   /** logger */
-  private static final JetspeedLogger logger = JetspeedLogFactoryService
-    .getLogger(ScheduleListScreen.class.getName());
+  private static final JetspeedLogger logger =
+    JetspeedLogFactoryService.getLogger(ScheduleListScreen.class.getName());
 
   /**
    *
@@ -123,8 +123,8 @@ public class ScheduleListScreen extends ScheduleScreen {
           List<UserFacilityLiteBean> ulist;
           if ("F".equals(has_acl_other)) {
             ulist = ScheduleUtils.getALEipFacility(selected_users, rundata);
-            if (selected_user.contains(String.valueOf(ALEipUtils
-              .getUserId(rundata)))) {
+            if (selected_user.contains(
+              String.valueOf(ALEipUtils.getUserId(rundata)))) {
               UserFacilityLiteBean login_user =
                 UserFacilityUtils.getUserFacilityLiteBean(rundata);
               ulist.add(login_user);

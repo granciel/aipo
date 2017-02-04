@@ -20,6 +20,7 @@ package com.aimluck.eip.schedule;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.jar.Attributes;
 
 import org.apache.turbine.util.RunData;
@@ -32,11 +33,13 @@ import com.aimluck.eip.common.ALDBErrorException;
 import com.aimluck.eip.common.ALPageNotFoundException;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.orm.query.ResultList;
+import com.aimluck.eip.schedule.util.ScheduleUtils;
 import com.aimluck.eip.util.ALEipUtils;
+import com.aimluck.eip.util.ALLocalizationUtils;
 
 /**
  * Widgetsで表示するカレンダーのクラスです。
- * 
+ *
  */
 public class AjaxScheduleMonthlySelectData extends
     ALAbstractSelectData<VEipTScheduleList, VEipTScheduleList> {
@@ -59,9 +62,25 @@ public class AjaxScheduleMonthlySelectData extends
   /** <code>nextMonth</code> 表示されている日 */
   private ALDateTimeField viewStart;
 
+  /** <code>startDayOfWeek</code> 週の始まり(月間)　日:1,月:2,火:3,水:4,木:5,金:6,土:7 */
+  protected int startDayOfWeek;
+
+  /** <code>weekRevised</code> 月間スケジュール用の週初めの曜日から始まる曜日の文字列のリスト */
+  private List<String> weekRevised;
+
+  private final String[] dayOfWeekStr = {
+    "",
+    ALLocalizationUtils.getl10n("SCHEDULE_SUNDAY"),
+    ALLocalizationUtils.getl10n("SCHEDULE_MONDAY"),
+    ALLocalizationUtils.getl10n("SCHEDULE_TUSEDAY"),
+    ALLocalizationUtils.getl10n("SCHEDULE_WEDNESDAY"),
+    ALLocalizationUtils.getl10n("SCHEDULE_THURSDAY"),
+    ALLocalizationUtils.getl10n("SCHEDULE_FRIDAY"),
+    ALLocalizationUtils.getl10n("SCHEDULE_SATURDAY") };
+
   /**
    * 現在の月を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getMonthlyCalendarToday() {
@@ -70,7 +89,7 @@ public class AjaxScheduleMonthlySelectData extends
 
   /**
    * 現在の月を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getMonthlyCalendarViewMonth() {
@@ -79,7 +98,7 @@ public class AjaxScheduleMonthlySelectData extends
 
   /**
    * 月間スケジュールコンテナを取得します。
-   * 
+   *
    * @return
    */
   public ScheduleMonthContainer getMonthlyCalendarContainer() {
@@ -88,7 +107,7 @@ public class AjaxScheduleMonthlySelectData extends
 
   /**
    * 前の月を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getMonthlyCalendarPrevMonth() {
@@ -97,7 +116,7 @@ public class AjaxScheduleMonthlySelectData extends
 
   /**
    * 次の月を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getMonthlyCalendarNextMonth() {
@@ -106,7 +125,7 @@ public class AjaxScheduleMonthlySelectData extends
 
   /**
    * 現在の月を取得します。
-   * 
+   *
    * @return
    */
   public void setMonthlyCalendarViewMonth(String year, String month) {
@@ -118,7 +137,7 @@ public class AjaxScheduleMonthlySelectData extends
 
   /**
    * Widgetsで表示する用のカレンダーデータをセットします。
-   * 
+   *
    * @param rundata
    * @param context
    * @throws ALPageNotFoundException
@@ -159,22 +178,32 @@ public class AjaxScheduleMonthlySelectData extends
         .toString());
     }
 
+    // 週の始まり
+    String startDayOfWeekStr =
+      ALEipUtils
+        .getPortlet(rundata, context)
+        .getPortletConfig()
+        .getInitParameter("z1a-rows");
+    if (startDayOfWeekStr != null) {
+      startDayOfWeek = Integer.parseInt(startDayOfWeekStr);
+    } else {
+      // ガラケーの場合 日曜始まりにしておく
+      startDayOfWeek = 1;
+    }
+
     // 今日
     Calendar cal = Calendar.getInstance();
     today.setValue(cal.getTime());
-
     // 表示開始日時
-    Calendar tmpCal = Calendar.getInstance();
     cal.setTime(viewMonth.getValue());
-    tmpCal.setTime(viewMonth.getValue());
-    int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
-    cal.add(Calendar.DATE, -dayofweek + 1);
+    // 週の始まり（月間）の設定に応じて表示開始日時を変更する
+    shiftCalToMatchStartDayOfWeek(cal, startDayOfWeek);
 
     // 月間スケジュールコンテナの初期化
     try {
       monthCon = new ScheduleMonthContainer();
       monthCon.initField();
-      monthCon.setViewMonth(cal, tmpCal);
+      monthCon.setViewMonth(cal);
     } catch (Exception e) {
       // logger.error("schedule", e);
     }
@@ -186,6 +215,37 @@ public class AjaxScheduleMonthlySelectData extends
     nextMonth.setValue(cal2.getTime());
     cal2.add(Calendar.MONTH, -2);
     prevMonth.setValue(cal2.getTime());
+
+    // 週初めの曜日に合わせて文字列リスト作成
+    weekRevised = new ArrayList<String>();
+    for (int i = 0; i < Calendar.DAY_OF_WEEK; i++) {
+      int dayOfWeek = startDayOfWeek + i;
+      if (dayOfWeek > Calendar.DAY_OF_WEEK) {
+        dayOfWeek = dayOfWeek % Calendar.DAY_OF_WEEK;
+      }
+      weekRevised.add(dayOfWeekStr[dayOfWeek]);
+    }
+  }
+
+  /**
+   * 週の始まり（月間）の設定に応じて表示開始日時(cal)を変更する
+   *
+   * 例：木曜始まりの月(dayofweek=5)で、 週の始まり（月間）の設定が土曜（startDayOfWeek=7）の場合、
+   * diff=-5+7=2なので、calを+2ずらせば、土曜始まりの表示開始日時になる。
+   * しかし、+2すると今月の一日と二日が表示されなくなるので、diffが正のときには、diff-7=-5ずらす。
+   *
+   * @param cal
+   * @param startDayOfWeek
+   *
+   */
+  protected void shiftCalToMatchStartDayOfWeek(Calendar cal, int startDayOfWeek) {
+    int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
+    int diff = -dayofweek + startDayOfWeek;
+    if (diff > 0) {
+      cal.add(Calendar.DATE, diff - 7);
+    } else {
+      cal.add(Calendar.DATE, diff);
+    }
   }
 
   /**
@@ -296,6 +356,41 @@ public class AjaxScheduleMonthlySelectData extends
    */
   public ALDateTimeField getViewDate() {
     return viewStart;
+  }
+
+  /**
+   * 週の始まり(月間)を取得します
+   *
+   * @return
+   */
+  public int getStartDayOfWeek() {
+    return startDayOfWeek;
+  }
+
+  /**
+   * 月間スケジュール用の、週初めの曜日から始まる曜日の文字列のリストを取得します
+   *
+   * @return
+   */
+  public List<String> getWeekRevised() {
+    return weekRevised;
+  }
+
+  /**
+   * 曜日の文字列（例："木"）から、その曜日が休日かどうかを判定する
+   *
+   * @param str
+   * @return
+   */
+  public boolean isHoliday(String str) {
+    for (int i = 0; i < dayOfWeekStr.length; i++) {
+      if (dayOfWeekStr[i].equals(str)) {
+        // 日曜の時:0,土曜の時:6を引数とするようにする
+        return ScheduleUtils.isUserHoliday(i - 1);
+      }
+    }
+    return false;
+
   }
 
 }

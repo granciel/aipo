@@ -373,6 +373,18 @@ public class ALDateTimeField extends ALAbstractField {
   }
 
   /**
+   * 曜日の数値表現を取得します
+   *
+   * @return
+   */
+  public Integer getDayOfWeekNum() {
+    if (calendar == null || isNullYear() || isNullMonth() || isNullDay()) {
+      return null;
+    }
+    return calendar.get(Calendar.DAY_OF_WEEK);
+  }
+
+  /**
    * 年の値を取得します。
    *
    * @return

@@ -30,7 +30,7 @@ import com.aimluck.eip.schedule.util.ScheduleUtils;
 
 /**
  * スケジュールコンテナです。
- * 
+ *
  */
 public class ScheduleDayContainer implements ALData {
 
@@ -50,7 +50,7 @@ public class ScheduleDayContainer implements ALData {
   private ALHoliday holiday;
 
   /*
-   * 
+   *
    */
   @Override
   public void initField() {
@@ -63,7 +63,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * スケジュールリストを取得します。
-   * 
+   *
    * @return
    */
   public List<ScheduleResultData> getScheduleList() {
@@ -72,7 +72,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 日付を設定します。
-   * 
+   *
    * @param date
    */
   public void setDate(Date date) {
@@ -85,7 +85,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 日付を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getDate() {
@@ -93,7 +93,7 @@ public class ScheduleDayContainer implements ALData {
   }
 
   /**
-   * 
+   *
    * @return ScheduleWeeklySelectDataのtodayのフォーマットに合わせたString
    */
   public String getToday() {
@@ -103,7 +103,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 期間スケジュールがあるかどうかを設定します。
-   * 
+   *
    * @param bool
    */
   public void setHasspan(boolean bool) {
@@ -112,7 +112,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 期間スケジュールがNULLかどうか。
-   * 
+   *
    * @return
    */
   public boolean isSpanNull() {
@@ -121,7 +121,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 期間スケジュールがあるかどうか。
-   * 
+   *
    * @return
    */
   public boolean isHasspan() {
@@ -130,7 +130,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * スケジュールを追加します。
-   * 
+   *
    * @param rd
    */
   public void addResultData(ScheduleResultData rd) {
@@ -210,7 +210,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 期間スケジュールを追加します。
-   * 
+   *
    * @param rd
    */
   public void setSpanResultData(ScheduleResultData rd) {
@@ -219,7 +219,7 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 期間スケジュールを取得します。
-   * 
+   *
    * @return
    */
   public ScheduleResultData getSpanResultData() {
@@ -228,19 +228,36 @@ public class ScheduleDayContainer implements ALData {
 
   /**
    * 祝日かどうかを検証する． 祝日の場合，true．
-   * 
+   *
    * @return
    */
   public boolean isHoliday() {
+
     return (holiday == null) ? false : true;
+
+  }
+
+  /**
+   * 祝日を休日にするかどうかを検証する. 休日にする場合 ture
+   */
+  public boolean isDayOffHoliday() {
+    return ScheduleUtils.isDayOffHoliday();
   }
 
   /**
    * 祝日情報を取得する．
-   * 
+   *
    * @return
    */
   public ALHoliday getHoliday() {
     return holiday;
   }
+
+  /**
+   * 休日かどうかを判定する 休日の場合 ture
+   */
+  public boolean isUserHoliday(int DayOfWeek) {
+    return ScheduleUtils.isUserHoliday(DayOfWeek);
+  }
+
 }

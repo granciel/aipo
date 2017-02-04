@@ -912,6 +912,7 @@ CREATE TABLE EIP_T_EXT_TIMECARD_SYSTEM
     CHANGE_HOUR INTEGER,
     OUTGOING_ADD_FLAG VARCHAR (1),
     OVERTIME_TYPE VARCHAR (8) DEFAULT 'O',
+    HOLIDAY_OF_WEEK VARCHAR (32) DEFAULT 'A',
     CREATE_DATE DATE,
     UPDATE_DATE TIMESTAMP,
     PRIMARY KEY(SYSTEM_ID)
@@ -2223,8 +2224,11 @@ INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(182,'cabinet_folder','共有フォ�
 -- INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(194,'manhour_common_category_other','プロジェクト管理（他ユーザーの共有カテゴリ）操作',27);
 INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(201,'portlet_customize','アプリ配置',29);
 INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(211,'report_self','報告書（自分の報告書）操作',31);
-INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(212,'report_other','報告書（他ユーザーの報告書）操作',3);
+INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(212,'report_other','報告書（他ユーザーの報告書）操作',27);
 INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(213,'report_reply','報告書（報告書への返信）操作',20);
+INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(221,'timeline_post','タイムライン（自分の投稿）操作',21);
+INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(222,'timeline_post_other','タイムライン（他ユーザーの投稿）操作',17);
+INSERT INTO EIP_T_ACL_PORTLET_FEATURE VALUES(223,'timeline_comment','タイムライン（コメント）操作',20);
 
 
 SELECT setval('pk_eip_t_acl_portlet_feature',300);
@@ -2280,8 +2284,13 @@ INSERT INTO EIP_T_ACL_ROLE VALUES(29,'アプリ配置管理者',201,29,NULL);
 
 --report
 INSERT INTO EIP_T_ACL_ROLE VALUES(31, '報告書（自分の報告書）管理者',211,31,'＊追加、編集、削除は一覧表示と詳細表示の権限を持っていないと使用できません');
-INSERT INTO EIP_T_ACL_ROLE VALUES(32,'報告書（他ユーザーの報告書）管理者',212,3,'＊詳細表示は一覧表示の権限を持っていないと使用できません');
+INSERT INTO EIP_T_ACL_ROLE VALUES(32,'報告書（他ユーザーの報告書）管理者',212,27,'＊詳細表示は一覧表示の権限を持っていないと使用できません');
 INSERT INTO EIP_T_ACL_ROLE VALUES(33,'報告書（報告書への返信）管理者',213,20,NULL);
+
+-- timeline
+INSERT INTO EIP_T_ACL_ROLE VALUES(34, 'タイムライン（自分の投稿）管理者',221,21,'＊追加、削除は一覧表示の権限を持っていないと使用できません');
+INSERT INTO EIP_T_ACL_ROLE VALUES(35,'タイムライン（他ユーザーの投稿）管理者',222,1,NULL);
+INSERT INTO EIP_T_ACL_ROLE VALUES(36,'タイムライン（コメント）管理者',223,20,NULL);
 
 SELECT setval('pk_eip_t_acl_role',10000);
 
@@ -2305,7 +2314,7 @@ INSERT INTO EIP_T_WORKFLOW_CATEGORY VALUES(8,0,'特別有給休暇届（業務�
 INSERT INTO EIP_T_WORKFLOW_CATEGORY VALUES(9,0,'忌引き休暇届','',NULL,NULL);
 SELECT setval('pk_eip_t_workflow_category',9);
 
-INSERT INTO EIP_T_EXT_TIMECARD_SYSTEM VALUES(1, 0, '通常', 9, 0, 18, 0, 1, 360, 60, 360, 60, 4, 'T', 'L480', now(), now());
+INSERT INTO EIP_T_EXT_TIMECARD_SYSTEM VALUES(1, 0, '通常', 9, 0, 18, 0, 1, 360, 60, 360, 60, 4, 'T', 'L480', 'A', now(), now());
 SELECT setval('pk_eip_t_ext_timecard_system',1);
 
 INSERT INTO EIP_M_GPDB_KUBUN VALUES (1, '都道府県', now(), now());

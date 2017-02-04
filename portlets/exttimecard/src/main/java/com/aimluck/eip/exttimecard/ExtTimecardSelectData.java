@@ -941,6 +941,7 @@ public class ExtTimecardSelectData extends
 
       /** ExtTimecardListResultDataのインスタンスをlistに投入。 */
       Calendar cal = Calendar.getInstance();
+      cal.set(Calendar.YEAR, Integer.parseInt(viewMonth.getYear()));
       cal.set(Calendar.MONTH, Integer.parseInt(viewMonth.getMonth()) - 1);
       cal.set(Calendar.DATE, startDay);
       cal.set(Calendar.HOUR_OF_DAY, 0);

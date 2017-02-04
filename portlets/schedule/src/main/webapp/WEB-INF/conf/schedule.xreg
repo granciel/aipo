@@ -29,6 +29,7 @@
         <classname>org.apache.jetspeed.portal.portlets.VelocityPortlet</classname>
         <parameter name="template" value="schedule" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="action" value="schedule.ScheduleAction" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+
 	    <parameter name="pba-template" value="schedule-calendar" type="style" hidden="false" cachedOnName="true" cachedOnValue="true">
 	        <meta-info>
                 <title>初期表示</title>
@@ -37,6 +38,7 @@
     	<parameter name="pba-template.style" value="ListBox" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="pba-template.style.items" value="schedule-calendar,schedule-oneday-group,schedule-weekly-group,schedule-monthly,schedule-search-list" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="pba-template.style.values" value="ブロック,日,週,月,一覧" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+
         <parameter name="p19-rows" value="detail" type="style" hidden="false" cachedOnName="true" cachedOnValue="true">
 	        <meta-info>
                 <title>表示形式（トップページ）</title>
@@ -53,6 +55,7 @@
     	<parameter name="p195-rows.style" value="ListBox" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p195-rows.style.items" value="simple,detail" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p195-rows.style.values" value="簡易表示,詳細表示" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+
         <parameter name="p1a-rows" value="9" type="style" hidden="false" cachedOnName="true" cachedOnValue="true">
             <meta-info>
                 <title>表示開始時間</title>
@@ -61,6 +64,7 @@
         <parameter name="p1a-rows.style" value="ListBox" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p1a-rows.style.items" value="0,1,2,3,4,5,6,7,8,9,10,11,12" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p1a-rows.style.values" value="0時,1時,2時,3時,4時,5時,6時,7時,8時,9時,10時,11時,12時" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+
         <parameter name="p1b-rows" value="22" type="style" hidden="false" cachedOnName="true" cachedOnValue="true">
             <meta-info>
                 <title>表示終了時間</title>
@@ -115,6 +119,7 @@
         <parameter name="p5a-view.style" value="ListBox" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p5a-view.style.items" value="1,0" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p5a-view.style.values" value="有効,無効" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+
         <parameter name="p7d-schk" value="f" type="style" hidden="false" cachedOnName="true" cachedOnValue="true">
             <meta-info>
                 <title>ブロックの簡易表示</title>
@@ -123,6 +128,15 @@
         <parameter name="p7d-schk.style" value="ListBox" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p7d-schk.style.items" value="f,t" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="p7d-schk.style.values" value="有効,無効" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+
+        <parameter name="z1a-rows" value="1" type="style" hidden="false" cachedOnName="true" cachedOnValue="true">
+            <meta-info>
+                <title>週の始まり（月間）</title>
+            </meta-info>
+        </parameter>
+        <parameter name="z1a-rows.style" value="ListBox" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+        <parameter name="z1a-rows.style.items" value="1,2,3,4,5,6,7" hidden="true" cachedOnName="true" cachedOnValue="true"/>
+        <parameter name="z1a-rows.style.values" value="日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日" hidden="true" cachedOnName="true" cachedOnValue="true"/>
 
         <parameter name="action" value="schedule.ScheduleAction" hidden="true" cachedOnName="true" cachedOnValue="true"/>
         <parameter name="function_mode1" value="ScheduleFormScreen" hidden="true" cachedOnName="true" cachedOnValue="true"/>

@@ -30,7 +30,7 @@ import com.aimluck.eip.schedule.util.ScheduleUtils;
 
 /**
  * カレンダー用スケジュールコンテナです。
- * 
+ *
  */
 public class AjaxScheduleDayContainer implements ALData {
 
@@ -47,8 +47,9 @@ public class AjaxScheduleDayContainer implements ALData {
   private ALHoliday holiday;
 
   /*
-   * 
+   *
    */
+  @Override
   public void initField() {
     // 日付
     today = new ALDateTimeField("yyyy-MM-dd-HH-mm");
@@ -59,7 +60,7 @@ public class AjaxScheduleDayContainer implements ALData {
 
   /**
    * スケジュールリストを取得します。
-   * 
+   *
    * @return
    */
   public List<AjaxScheduleResultData> getScheduleList() {
@@ -68,7 +69,7 @@ public class AjaxScheduleDayContainer implements ALData {
 
   /**
    * 日付を設定します。
-   * 
+   *
    * @param date
    */
   public void setDate(Date date) {
@@ -81,7 +82,7 @@ public class AjaxScheduleDayContainer implements ALData {
 
   /**
    * 日付を取得します。
-   * 
+   *
    * @return
    */
   public ALDateTimeField getDate() {
@@ -90,7 +91,7 @@ public class AjaxScheduleDayContainer implements ALData {
 
   /**
    * スケジュールを追加します。
-   * 
+   *
    * @param rd
    */
   public void addResultData(AjaxScheduleResultData rd, boolean show_all) {
@@ -194,7 +195,7 @@ public class AjaxScheduleDayContainer implements ALData {
 
   /**
    * 祝日かどうかを検証する． 祝日の場合，true．
-   * 
+   *
    * @return
    */
   public boolean isHoliday() {
@@ -202,8 +203,30 @@ public class AjaxScheduleDayContainer implements ALData {
   }
 
   /**
-   * 祝日情報を取得する．
+   * ユーザーが設定した休日かどうか
+   *
    * 
+   */
+  public boolean isUserHoliday() {
+    Integer weekNum = today.getDayOfWeekNum();
+    if (weekNum == null) {
+      return false;
+    }
+    return ScheduleUtils.isUserHoliday(weekNum - 1);
+  }
+
+  /**
+   * 祝日を休日にするかどうか
+   *
+   * @return
+   */
+  public boolean isDayOffHoliday() {
+    return ScheduleUtils.isDayOffHoliday();
+  }
+
+  /**
+   * 祝日情報を取得する．
+   *
    * @return
    */
   public ALHoliday getHoliday() {

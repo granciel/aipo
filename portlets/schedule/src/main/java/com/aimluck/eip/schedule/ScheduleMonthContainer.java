@@ -26,7 +26,7 @@ import com.aimluck.eip.common.ALData;
 
 /**
  * 月間スケジュールコンテナを取得します。
- * 
+ *
  */
 public class ScheduleMonthContainer implements ALData {
 
@@ -43,10 +43,10 @@ public class ScheduleMonthContainer implements ALData {
 
   /**
    * 表示する月を設定します。
-   * 
+   *
    * @param cal
    */
-  public void setViewMonth(Calendar cal, Calendar vcal) {
+  public void setViewMonth(Calendar cal) {
     for (int i = 1; i <= 6; i++) {
       // 日付を7日ずつずらす
       ScheduleWeekContainer con = new ScheduleWeekContainer();
@@ -59,7 +59,7 @@ public class ScheduleMonthContainer implements ALData {
 
   /**
    * スケジュールを追加します。
-   * 
+   *
    * @param rd
    */
   public boolean addResultData(ScheduleResultData rd) {
@@ -75,7 +75,7 @@ public class ScheduleMonthContainer implements ALData {
 
   /**
    * 週間スケジュールリストを取得します。
-   * 
+   *
    * @return
    */
   public List<ScheduleWeekContainer> getWeekList() {

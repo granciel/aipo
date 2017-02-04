@@ -500,7 +500,7 @@ public class FileIOAccountCsvFormData extends ALAbstractFormData {
     if (!code.validate(msgList)) {
       code.setValue(null);
     } else {
-      if ((!code.equals("")) && (isDuplicateCode())) {
+      if ((!"".equals(code.toString())) && (isDuplicateCode())) {
         msgList.add(ALLocalizationUtils.getl10n("FILEIO_EXIST_SAME_NAME_CODE"));
       }
     }

@@ -117,6 +117,48 @@ $l10n.EXTTIMECARD_OVERTIME_TYPE_DAY2</p>
 $l10n.EXTTIMECARD_OVERTIME_TYPE_O
 #end
 #ALtditemfooter()
+#ALtdcaption("#ALrequired($l10n.EXTTIMECARD_HOLIDAY_SETTING)")
+#ALtditemheader()
+<p><input name="default_holiday_flag" type="radio" value="A" id="default_holiday_flagA_$!{portlet.ID}" #if ($!{result.DefaultHolidayFlag.toString()} == "A") checked="checked" #end onclick="aipo.exttimecardsystem.originalHolidayFieldOFF()"/>&nbsp;<label for="default_holiday_flagA_$!{portlet.ID}" onclick="aipo.exttimecardsystem.originalHolidayFieldOFF()">$l10n.EXTTIMECARD_HOLIDAY_SETTING_DEFAULT_HOLIDAY</label></p>
+<p><input name="default_holiday_flag" type="radio" value="C" id="default_holiday_flagC_$!{portlet.ID}" #if ($!{result.DefaultHolidayFlag.toString()} == "C") checked="checked" #end onclick="aipo.exttimecardsystem.originalHolidayFieldON()"/>&nbsp;<label for="default_holiday_flagC_$!{portlet.ID}" onclick="aipo.exttimecardsystem.originalHolidayFieldON()">$l10n.EXTTIMECARD_HOLIDAY_SETTING_ORIGINAL_HOLIDAY</label></p>
+<div id="originalHolidayField" style="display:#if ($!{result.DefaultHolidayFlag.toString()} == "A") none #end">
+  <h3>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK_OF_DAY</h3>
+  <p>
+    <input name="week1" type="checkbox" value="1" id="week1" #if ($!result.Week1.toString() == "1") checked="checked" #end />
+    <label for="week1">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK1</label>
+    <input name="week2" type="checkbox" value="1" id="week2" #if ($!result.Week2.toString() == "1") checked="checked" #end />
+    <label for="week2">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK2</label>
+    <input name="week3" type="checkbox" value="1" id="week3" #if ($!result.Week3.toString() == "1") checked="checked" #end />
+    <label for="week3">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK3</label>
+    <input name="week4" type="checkbox" value="1" id="week4" #if ($!result.Week4.toString() == "1") checked="checked" #end />
+    <label for="week4">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK4</label>
+    <input name="week5" type="checkbox" value="1" id="week5" #if ($!result.Week5.toString() == "1") checked="checked" #end />
+    <label for="week5">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK5</label>
+    <input name="week6" type="checkbox" value="1" id="week6" #if ($!result.Week6.toString() == "1") checked="checked" #end />
+    <label for="week6">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK6</label>
+    <input name="week7" type="checkbox" value="1" id="week7" #if ($!result.Week7.toString() == "1") checked="checked" #end />
+    <label for="week7">$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK7</label>
+  </p>
+  <h3>$l10n.EXTTIMECARD_HOLIDAY_SETTING_STATUTORY_HOLIDAY</h3>
+  <p>
+    <select name="statutoryHoliday">
+      <option value="0" #if ($!result.StatutoryHoliday.toString() == "0") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_NOTHING</option>
+      <option value="1" #if ($!result.StatutoryHoliday.toString() == "1") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK1</option>
+      <option value="2" #if ($!result.StatutoryHoliday.toString() == "2") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK2</option>
+      <option value="3" #if ($!result.StatutoryHoliday.toString() == "3") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK3</option>
+      <option value="4" #if ($!result.StatutoryHoliday.toString() == "4") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK4</option>
+      <option value="5" #if ($!result.StatutoryHoliday.toString() == "5") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK5</option>
+      <option value="6" #if ($!result.StatutoryHoliday.toString() == "6") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK6</option>
+      <option value="7" #if ($!result.StatutoryHoliday.toString() == "7") selected="selected"#end>$l10n.EXTTIMECARD_HOLIDAY_SETTING_WEEK7</option>
+    </select>
+  </p>
+  <h3>$l10n.EXTTIMECARD_HOLIDAY_SETTING_HOLIDAY</h3>
+  <p>
+    <input name="holiday" type="checkbox" value="1" id="holiday" #if ($!result.Holiday.toString() == "1") checked="checked" #end />
+    <label for="holiday">$l10n.EXTTIMECARD_HOLIDAY_SETTING_HOLIDAY_MESSAGE</label>
+  </p>
+</div>
+#ALtditemfooter()
 #ALtablefooter()
 #ALbuttonheader()
 #ALsubmit($event_submit $action_str)

@@ -50,13 +50,9 @@
     	</th>
     	</tr>
     	<tr class="week">
-    		<td class="sunday">$l10n.SCHEDULE_SUNDAY</td>
-    		<td>$l10n.SCHEDULE_MONDAY</td>
-    		<td>$l10n.SCHEDULE_TUSEDAY</td>
-    		<td>$l10n.SCHEDULE_WEDNESDAY</td>
-    		<td>$l10n.SCHEDULE_THURSDAY</td>
-    		<td>$l10n.SCHEDULE_FRIDAY</td>
-    		<td class="saturday">$l10n.SCHEDULE_SATURDAY</td>
+    		#foreach($dayOfWeekStr in  $!{result.WeekRevised})
+    			<td #if($dayOfWeekStr==$l10n.SCHEDULE_SATURDAY) class='saturday' #elseif($dayOfWeekStr==$l10n.SCHEDULE_SUNDAY) class='sunday' #end>$dayOfWeekStr</td>
+    		#end
     	</tr>
     	#set($entityids = "")
     	#set($weekListSize = $result.MonthlyCalendarContainer.WeekList.size())

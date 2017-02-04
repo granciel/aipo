@@ -110,6 +110,8 @@ public class ScheduleWeeklyJSONFormData {
 
   private boolean ignore_duplicate_facility;
 
+  private boolean isDayOffHoliday; // 祝日を休日にするかどうか
+
   public void initField() {
     aclPortletFeature = ALAccessControlConstants.POERTLET_FEATURE_SCHEDULE_SELF;
   }
@@ -235,11 +237,15 @@ public class ScheduleWeeklyJSONFormData {
         dateList.add(container.getDate().toString());
         dayOfWeekList.add(container.getDate().getDayOfWeek());
         _scheduleList = container.getScheduleList();
+
         if (container.isHoliday()) {
           holidayList.add(container.getHoliday().getName().getValue());
+        } else if (container.isUserHoliday()) {
+          holidayList.add("set");
         } else {
           holidayList.add("");
         }
+
         if (i == 0) {
           json.put("startDate", container.getDate().toString());
         } else if (i == dayListSize - 1) {
@@ -273,6 +279,8 @@ public class ScheduleWeeklyJSONFormData {
       json.put("holiday", holidayList);
       json.put("date", dateList);
       json.put("dayOfWeek", dayOfWeekList);
+      isDayOffHoliday = ScheduleUtils.isDayOffHoliday();
+      json.put("dayoff", isDayOffHoliday);
       if ((msgList != null) && (msgList.size() > 0)) {
         json.put("errList", msgList);
       }

@@ -86,3 +86,11 @@ aipo.exttimecardsystem.changeTypeOld = function(){
     dojo.byId("timecard-type-new").style.display = "none";
     dojo.byId("timecard-type-old").style.display = "";
 }
+
+aipo.exttimecardsystem.originalHolidayFieldON = function(){
+    dojo.byId('originalHolidayField').style.display = "";
+}
+
+aipo.exttimecardsystem.originalHolidayFieldOFF = function(){
+    dojo.byId('originalHolidayField').style.display = "none";
+}

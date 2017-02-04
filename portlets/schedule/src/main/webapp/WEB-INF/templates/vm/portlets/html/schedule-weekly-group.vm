@@ -138,17 +138,24 @@
 #end
 #foreach($record in $daylist)
 #set($getScheduleDetailLink = $!jslink.getPortletById($!portlet.ID).addQueryData('template','ScheduleDetailJSONScreen').addQueryData('view_date', $!{record.Date.toString()}))
-#if($!{record.isHoliday()})
+
+##祝日を休日にする設定かつ祝日であるばあい
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($stday = $velocityCount )
 #ALOnedayLink($!portlet.ID $filter $record 'holiday groupWeekly')
 <br />
 <span class="holiday">${record.Holiday.Name}</span>
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($stday = $velocityCount )
-#ALOnedayLink($!portlet.ID $filter $record 'sunday groupWeekly')
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($sunday = $velocityCount )
-#ALOnedayLink($!portlet.ID $filter $record 'saturday groupWeekly')
+
+##祝日である場合
+#elseif($!{record.isHoliday()})
+#ALOnedayLink($!portlet.ID $filter $record 'groupWeekly')
+<br />
+<span class="holiday">${record.Holiday.Name}</span>
+
+
+##ユーザーが設定した休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#ALOnedayLink($!portlet.ID $filter $record 'holiday groupWeekly')
 #elseif($!{result.Today.Value} == $!{record.Date.Value})
 #ALOnedayLink($!portlet.ID $filter $record 'today groupWeekly')
 #else
@@ -189,12 +196,11 @@
 #end
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
+
 #end
-#if($!{record.isHoliday()})
+#if($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($color_style_holiday = " holiday")
+#elseif($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #end
 #if( ! $record.isTermNull() )
@@ -242,12 +248,10 @@
 #end
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
 #end
-#if($!{record.isHoliday()})
+#if($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($color_style_holiday = " holiday")
+#elseif($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #end
 #if( ! $record.isTodoNull() )
@@ -281,12 +285,10 @@ $!{record.ToDoResultData.TodoName}
 #set ($holiday_name = "")
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
 #end
-#if($!{record.isHoliday()})
+#if($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($color_style_holiday = " holiday")
+#elseif($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #end
 
@@ -369,17 +371,14 @@ $!{record.ToDoResultData.TodoName}
 #end
 #foreach($record in $daylist)
 #set($getScheduleDetailLink = $!jslink.getPortletById($!portlet.ID).addQueryData('template','ScheduleDetailJSONScreen').addQueryData('view_date', $!{record.Date.toString()}))
-#if($!{record.isHoliday()})
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($stday = $velocityCount )
 #ALOnedayLinkFacility($!portlet.ID $filter $record 'holiday groupWeekly')
 <br />
 <span class="holiday">${record.Holiday.Name}</span>
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($stday = $velocityCount )
-#ALOnedayLinkFacility($!portlet.ID $filter $record 'sunday groupWeekly')
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($sunday = $velocityCount )
-#ALOnedayLinkFacility($!portlet.ID $filter $record 'saturday groupWeekly')
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set ($stday = $velocityCount)
+#ALOnedayLinkFacility($!portlet.ID $filter $record 'holiday groupWeekly')
 #elseif($!{result.Today.Value} == $!{record.Date.Value})
 #ALOnedayLinkFacility($!portlet.ID $filter $record 'today groupWeekly')
 #else
@@ -413,12 +412,13 @@ $!{record.ToDoResultData.TodoName}
 #end
 #if($!{result.Today.Value} == $!{record.Date.Value})
 #set ($color_style = " today")
-#elseif($!{record.Date.Value.Day} == 0)
-#set ($color_style = " sunday")
-#elseif($!{record.Date.Value.Day} == 6)
-#set ($color_style = " saturday")
+
+##ユーザーが設定した休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+#set($color_style_holiday = " holiday")
 #end
-#if($!{record.isHoliday()})
+##祝日を休日にする設定でありかつ祝日である場合
+#if($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 #set ($color_style_holiday = " holiday")
 #end
 #if( ! $record.isTermNull() )
@@ -466,13 +466,19 @@ $!{record.ToDoResultData.TodoName}
 <td class='addScheduleCell today' style='vertical-align:top;' height='100%' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)")>
 #end
 ##<table class="outer" cellspacing="1" cellpadding="2" width="100%" height="100%"><tbody><tr ><td class="item" style="vertical-align:top;background-color:#FFFFE5" height="100%">
-#elseif($!{record.isHoliday()})
+##祝日
+#elseif($!{record.isDayOffHoliday()} && $!{record.isHoliday()})
 
 <td class='addScheduleCell holiday' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
-#elseif($!{record.Date.Value.Day} == 0)
-<td class='addScheduleCell sunday' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
-#elseif($!{record.Date.Value.Day} == 6)
-<td class='addScheduleCell saturday' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
+
+##ユーザーがせっていした休日
+#elseif($!{record.isUserHoliday($!{record.Date.Value.Day})})
+<td class='addScheduleCell holiday' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
+
+##elseif($!{record.Date.Value.Day} == 0)
+##<td class='addScheduleCell sunday' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
+##elseif($!{record.Date.Value.Day} == 6)
+##<td class='addScheduleCell saturday' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
 #else
 <td class='addScheduleCell' style='vertical-align:top;' onclick="aipo.schedule.showScheduleAddDialog(this,event,'$!utils.escapeXML($addScheduleLink)', '$!portlet.ID', aipo.schedule.onLoadScheduleDialog)">
 #end

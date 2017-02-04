@@ -41,7 +41,17 @@ public class EipTExtTimecardSystem extends _EipTExtTimecardSystem {
   }
 
   public void setSystemId(String id) {
-    setObjectId(new ObjectId("EipTExtTimecardSystem", SYSTEM_ID_PK_COLUMN,
-        Integer.valueOf(id)));
+    setObjectId(new ObjectId(
+      "EipTExtTimecardSystem",
+      SYSTEM_ID_PK_COLUMN,
+      Integer.valueOf(id)));
+  }
+
+  public boolean isDefaultHoliday() {
+    return getHolidayOfWeek().charAt(0) == 'A';
+  }
+
+  public String getOriginalHolidayOfWeek() {
+    return getHolidayOfWeek().substring(1, 10);
   }
 }

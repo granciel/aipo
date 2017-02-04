@@ -34,7 +34,7 @@ import com.aimluck.eip.schedule.ScheduleWeekContainer;
 
 /**
  * カレンダーを処理するクラスです。 <br />
- * 
+ *
  */
 public class ScheduleMonthlyJSONScreen extends ALJSONScreen {
 

@@ -42,6 +42,7 @@ import java.util.TimeZone;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.cayenne.DataRow;
@@ -107,6 +108,7 @@ import com.aimluck.eip.fileupload.beans.FileuploadBean;
 import com.aimluck.eip.fileupload.beans.FileuploadLiteBean;
 import com.aimluck.eip.fileupload.util.FileuploadUtils;
 import com.aimluck.eip.fileupload.util.FileuploadUtils.ShrinkImageSet;
+import com.aimluck.eip.http.HttpServletRequestLocator;
 import com.aimluck.eip.mail.util.ALMailUtils;
 import com.aimluck.eip.orm.Database;
 import com.aimluck.eip.orm.query.ResultList;
@@ -126,6 +128,8 @@ import com.aimluck.eip.schedule.ScheduleToDoWeekContainer;
 import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.accessctl.ALAccessControlFactoryService;
 import com.aimluck.eip.services.accessctl.ALAccessControlHandler;
+import com.aimluck.eip.services.config.ALConfigHandler;
+import com.aimluck.eip.services.config.ALConfigService;
 import com.aimluck.eip.services.orgutils.ALOrgUtilsService;
 import com.aimluck.eip.services.reminder.ALReminderHandler.ReminderCategory;
 import com.aimluck.eip.services.reminder.ALReminderHandler.ReminderNotifyType;
@@ -6188,6 +6192,43 @@ public class ScheduleUtils {
       }
     }
     return null;
+
+  }
+
+  public static String getHolidayOfWeek() {
+    HttpServletRequest request = HttpServletRequestLocator.get();
+    String cacheHoliday = null;
+    if (request != null) {
+      try {
+        cacheHoliday =
+          (String) request
+            .getAttribute(ALConfigHandler.Property.HOLIDAY_OF_WEEK.toString());
+      } catch (Throwable ignore) {
+
+      }
+    }
+    if (cacheHoliday == null) {
+      cacheHoliday =
+        ALConfigService.get(ALConfigHandler.Property.HOLIDAY_OF_WEEK);
+      if (request != null) {
+        request.setAttribute(ALConfigHandler.Property.HOLIDAY_OF_WEEK
+          .toString(), cacheHoliday);
+      }
+    }
+    return cacheHoliday;
+  }
+
+  /**
+   * 祝日を休日にするかどうかを検証する. 休日にする場合 true
+   */
+  public static boolean isDayOffHoliday() {
+    String cacheHoliday = getHolidayOfWeek();
+    return (cacheHoliday.charAt(8) == '0') ? false : true;
+  }
+
+  public static boolean isUserHoliday(int DayOfWeek) {
+    String cacheHoliday = getHolidayOfWeek();
+    return cacheHoliday.charAt(DayOfWeek) != '0';
 
   }
 }

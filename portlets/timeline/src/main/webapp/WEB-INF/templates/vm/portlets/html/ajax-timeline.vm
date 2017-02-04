@@ -37,7 +37,7 @@
 <input type="hidden" id="flag_$!{portlet.ID}" name="flag_$!{portlet.ID}" value="none" />
 <input type="hidden" id="height_$!{portlet.ID}" name="flag_$!{portlet.ID}" value="$result.ContentHeightMax" />
 <div id="messageDiv_$!portlet.ID"></div>
-<div id="inputField">
+<div id="inputField" #if(!$result.hasAclTimelineInsert())style="display:none;"#end>
 #ALajaxscreenformheader("timelineForm" $jslink $portlet "TimelineJSONScreen" "aimluck.io.createSelectFromFileList(this, '$!portlet.ID');aipo.timeline.submit(this,'$indicator_id','$!portlet.ID',aipo.timeline.onReceiveMessage)")
 
 <div class="tlInputMention" style="position:relative">
@@ -72,6 +72,7 @@
 </div>
 <div class="auiSummaryMeta auiFilter clearfix">
 	<div class="filters floatLeft" id="filters_$!{portlet.ID}">
+		        #if($!{result.hasAclTimelineListOther()})
 				<a href="javascript:void(0)" onclick="aipo.timeline.changeDisplay('$!{portlet.ID}');" class="customizeMenuIcon filterTip menubarOpenButton" >
 					<span id="tlDisplayGroup_$!{portlet.ID}">
 						#if("$!{result.TargetGroupName}" == "all")
@@ -90,15 +91,17 @@
 						#end
 					</span>
 				</a>
-				#if("$!{result.TargetDisplayName}" == "all")
+				#end
+				#if("$!{result.TargetDisplayName}" == "all" && $!{result.hasAclTimelineListOther()})
 					<a href="javascript:void(0)" onclick="aipo.timeline.changeDisplay('$!{portlet.ID}');" class="customizeMenuIcon filterTip menubarOpenButton" style="display:none;"><span id="tlDisplayGroup_$!{portlet.ID}">$l10n.TIMELINE_ALL_GROUP</span></a>
 				#else
 				<a href="javascript:void(0)" onclick="aipo.timeline.changeDisplay('$!{portlet.ID}');" class="customizeMenuIcon filterTip menubarOpenButton" >
 					<span id="tlDisplayGroup_$!{portlet.ID}">
-						#if("$!{result.TargetDisplayName}" == "posting")
+						#if("$!{result.TargetDisplayName}" == "all")
+						$l10n.TIMELINE_ALL_DISPLAY
+						#elseif("$!{result.TargetDisplayName}" == "posting")
 						$l10n.TIMELINE_ONLY_POSTING
-						#end
-						#if("$!{result.TargetDisplayName}" == "update")
+						#elseif("$!{result.TargetDisplayName}" == "update")
 						$l10n.TIMELINE_ONLY_UPDATE
 						#end
 					</span>
@@ -114,7 +117,8 @@
    </div>
   </div>
 </div>
-<div class="menubar multi" id="menubar_tlDisplayChanger_$!{portlet.ID}" style="width:260px;display:none; ">
+<div class="menubar multi" id="menubar_tlDisplayChanger_$!{portlet.ID}"#if($!{result.hasAclTimelineListOther()}) style="width:260px;display:none;"#else style="width:130px;display:none; "#end >
+	#if($!{result.hasAclTimelineListOther()})
 	<div>
 	<p class="caption">$l10n.COMMON_GROUP</p>
 	<ul class="filtertype_$!portlet.ID" data-type="post" data-defaultparam="0">
@@ -129,6 +133,7 @@
 		#end
 	</ul>
 	</div>
+	#end
 	<div>
 	<p class="caption" class="filtertype_$!portlet.ID" data-type="display" data-defaultparam="0">$l10n.TIMELINE_DISPLAY</p>
 	<ul>
