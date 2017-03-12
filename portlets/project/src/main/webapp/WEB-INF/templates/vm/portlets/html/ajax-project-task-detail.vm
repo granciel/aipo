@@ -208,11 +208,11 @@ $!result.Detail.Explanation
 					#ALtextarea('comment' '' 5 40)
 				</td>
 			</tr>
-			<tr #if(!$result.isFileUploadable())class="mb_hide"#end>
+			<tr #if(!$result.isFileUploadable() || (!$result.hasAttachmentInsertAuthority() && !$result.hasAttachmentDeleteAuthority()))class="hide"#end>
 				<td class="caption">$l10n.PROJECT_FILE_ATTACH</td>
 				<td>
 					<div class="clearfix">
-					<div>#IFFileUpload()</div>
+					<div>#ACLIFFileUpload()</div>
 					<ul id="attachments_$!{portlet.ID}" class="attachments">
 					</ul>
 					</div>

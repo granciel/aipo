@@ -396,39 +396,42 @@ public class BlogEntrySelectData extends
         }
       }
 
-      SelectQuery<EipTBlogFile> filequery = Database.query(EipTBlogFile.class);
-      Expression fileexp =
-        ExpressionFactory.matchDbExp(EipTBlogFile.EIP_TBLOG_ENTRY_PROPERTY
-          + "."
-          + EipTBlogEntry.ENTRY_ID_PK_COLUMN, record.getEntryId());
-      filequery.setQualifier(fileexp);
-      filequery.orderAscending(EipTBlogFile.UPDATE_DATE_PROPERTY);
-      filequery.orderAscending(EipTBlogFile.FILE_PATH_PROPERTY);
-      List<EipTBlogFile> files = filequery.fetchList();
+      if (hasAttachmentAuthority()) {
+        SelectQuery<EipTBlogFile> filequery =
+          Database.query(EipTBlogFile.class);
+        Expression fileexp =
+          ExpressionFactory.matchDbExp(EipTBlogFile.EIP_TBLOG_ENTRY_PROPERTY
+            + "."
+            + EipTBlogEntry.ENTRY_ID_PK_COLUMN, record.getEntryId());
+        filequery.setQualifier(fileexp);
+        filequery.orderAscending(EipTBlogFile.UPDATE_DATE_PROPERTY);
+        filequery.orderAscending(EipTBlogFile.FILE_PATH_PROPERTY);
+        List<EipTBlogFile> files = filequery.fetchList();
 
-      if (files != null && files.size() > 0) {
-        List<FileuploadBean> attachmentFileList =
-          new ArrayList<FileuploadBean>();
-        FileuploadBean filebean = null;
-        int size = files.size();
-        for (int i = 0; i < size; i++) {
-          EipTBlogFile file = files.get(i);
+        if (files != null && files.size() > 0) {
+          List<FileuploadBean> attachmentFileList =
+            new ArrayList<FileuploadBean>();
+          FileuploadBean filebean = null;
+          int size = files.size();
+          for (int i = 0; i < size; i++) {
+            EipTBlogFile file = files.get(i);
 
-          String realname = file.getTitle();
-          javax.activation.DataHandler hData =
-            new javax.activation.DataHandler(
-              new javax.activation.FileDataSource(realname));
+            String realname = file.getTitle();
+            javax.activation.DataHandler hData =
+              new javax.activation.DataHandler(
+                new javax.activation.FileDataSource(realname));
 
-          filebean = new FileuploadBean();
-          filebean.setFileId(file.getFileId());
-          filebean.setFileName(realname);
-          if (hData != null) {
-            filebean.setContentType(hData.getContentType());
+            filebean = new FileuploadBean();
+            filebean.setFileId(file.getFileId());
+            filebean.setFileName(realname);
+            if (hData != null) {
+              filebean.setContentType(hData.getContentType());
+            }
+            filebean.setIsImage(FileuploadUtils.isImage(realname));
+            attachmentFileList.add(filebean);
           }
-          filebean.setIsImage(FileuploadUtils.isImage(realname));
-          attachmentFileList.add(filebean);
+          rd.setAttachmentFiles(attachmentFileList);
         }
-        rd.setAttachmentFiles(attachmentFileList);
       }
 
       if (record.getOwnerId().intValue() == uid) {

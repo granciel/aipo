@@ -186,4 +186,15 @@ public class AccountEditSelectData extends
     return (random.nextInt() * 100);
   }
 
+  /**
+   * ファイルアップロードアクセス権限チェック用メソッド。<br />
+   * ファイルアップのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  @Override
+  public boolean isCheckAttachmentAuthority() {
+    return false;
+  }
+
 }

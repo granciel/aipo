@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.registry.PortletEntry;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 
+import com.aimluck.commons.field.ALStringField;
 import com.aimluck.eip.common.ALAbstractSelectData;
 import com.aimluck.eip.common.ALDBErrorException;
 import com.aimluck.eip.common.ALData;
@@ -31,6 +32,8 @@ import com.aimluck.eip.common.ALPageNotFoundException;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.orm.query.ResultList;
 import com.aimluck.eip.schedule.util.ScheduleUtils;
+import com.aimluck.eip.services.config.ALConfigHandler;
+import com.aimluck.eip.services.config.ALConfigService;
 import com.aimluck.eip.util.CustomizeUtils;
 
 /**
@@ -38,6 +41,8 @@ import com.aimluck.eip.util.CustomizeUtils;
  */
 public class ScheduleAdminSelectData extends
     ALAbstractSelectData<PortletEntry, PortletEntry> implements ALData {
+
+  private ALStringField enabled_maps;
 
   /**
    *
@@ -49,7 +54,9 @@ public class ScheduleAdminSelectData extends
   public void init(ALAction action, RunData rundata, Context context)
       throws ALPageNotFoundException, ALDBErrorException {
     super.init(action, rundata, context);
-
+    enabled_maps = new ALStringField();
+    enabled_maps.setValue(ALConfigService
+      .get(ALConfigHandler.Property.SCHEDULE_MAPS_ENABLED));
   }
 
   /**
@@ -103,5 +110,12 @@ public class ScheduleAdminSelectData extends
   @Override
   protected Attributes getColumnMap() {
     return null;
+  }
+
+  /**
+   * @return
+   */
+  public String getEnabledMapsFlag() {
+    return enabled_maps.toString();
   }
 }

@@ -33,6 +33,7 @@ import org.apache.turbine.services.TurbineServices;
 import org.apache.turbine.util.RunData;
 
 import com.aimluck.eip.common.ALPermissionException;
+import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.accessctl.ALAccessControlFactoryService;
 import com.aimluck.eip.services.accessctl.ALAccessControlHandler;
 import com.aimluck.eip.util.ALEipUtils;
@@ -108,6 +109,9 @@ public class FileuploadThumbnailScreen extends RawScreen {
   protected void doOutput(RunData rundata) throws Exception {
     ServletOutputStream out = null;
     try {
+      doCheckAttachmentAclPermission(
+        rundata,
+        ALAccessControlConstants.VALUE_ACL_EXPORT);
 
       HttpServletResponse response = rundata.getResponse();
 
@@ -158,6 +162,47 @@ public class FileuploadThumbnailScreen extends RawScreen {
       defineAclType)) {
       throw new ALPermissionException();
     }
+    return true;
+  }
+
+  /**
+   * ファイルのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected boolean doCheckAttachmentAclPermission(RunData rundata,
+      int defineAclType) throws ALPermissionException {
+
+    if (defineAclType == 0) {
+      return true;
+    }
+
+    // アクセス権限のチェックをしない場合
+    boolean checkAttachmentAuthority = isCheckAttachmentAuthority();
+    if (!checkAttachmentAuthority) {
+      return true;
+    }
+
+    ALAccessControlFactoryService aclservice =
+      (ALAccessControlFactoryService) ((TurbineServices) TurbineServices
+        .getInstance()).getService(ALAccessControlFactoryService.SERVICE_NAME);
+    ALAccessControlHandler aclhandler = aclservice.getAccessControlHandler();
+    if (!aclhandler.hasAuthority(
+      ALEipUtils.getUserId(rundata),
+      ALAccessControlConstants.POERTLET_FEATURE_ATTACHMENT,
+      defineAclType)) {
+      throw new ALPermissionException();
+    }
+    return true;
+  }
+
+  /**
+   * ファイルアクセス権限チェック用メソッド。<br />
+   * ファイルのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  public boolean isCheckAttachmentAuthority() {
     return true;
   }
 }

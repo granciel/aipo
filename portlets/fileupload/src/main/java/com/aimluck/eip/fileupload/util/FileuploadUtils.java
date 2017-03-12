@@ -50,6 +50,7 @@ import org.apache.turbine.util.RunData;
 
 import com.aimluck.eip.fileupload.beans.FileuploadLiteBean;
 import com.aimluck.eip.http.HttpServletRequestLocator;
+import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.storage.ALStorageService;
 import com.aimluck.eip.util.ALCommonUtils;
 import com.aimluck.eip.util.ALEipUtils;
@@ -982,4 +983,77 @@ public class FileuploadUtils {
     return !isDeskopApp()
       && Arrays.asList(ACCEPT_CONTENT_TYPES).contains(contentType);
   }
+
+  /**
+   * データ新規登録時のバリデート
+   *
+   * @param msgList
+   * @param fileuploadList
+   * @param hasInsertAuthority
+   * @return
+   */
+  public static boolean insertValidate(List<String> msgList,
+      List<? extends FileuploadLiteBean> fileuploadList,
+      boolean hasInsertAuthority) {
+    if ((fileuploadList != null && fileuploadList.size() > 0 && !hasInsertAuthority)) {
+      msgList.add(ALAccessControlConstants.DEF_ATTACHMENT_PERMISSION_ERROR_STR);
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * @param msgList
+   * @param formIdList
+   *          ：POSTされたファイルID一覧
+   * @param existFileIdList
+   *          ：登録済ファイルID一覧
+   * @param fileuploadList
+   * @param hasAttachmentInsertAuthority
+   * @param hasAttachmentDeleteAuthority
+   * @return
+   */
+  public static boolean updateValidate(List<String> msgList,
+      List<Integer> formIdList, List<Integer> existFileIdList,
+      List<? extends FileuploadLiteBean> fileuploadList,
+      boolean hasAttachmentInsertAuthority, boolean hasAttachmentDeleteAuthority) {
+
+    int deleting = 0;
+    int adding = 0;
+    // ファイル削除時の権限判定
+    if (existFileIdList != null && existFileIdList.size() > 0) {
+      for (Integer fileId : existFileIdList) {
+        if (!formIdList.contains(fileId)) {
+          // 削除数に加える
+          deleting++;
+        }
+      }
+
+      if (deleting > 0 && !hasAttachmentDeleteAuthority) {
+        // 添付ファイルに関する権限違反
+        msgList
+          .add(ALAccessControlConstants.DEF_ATTACHMENT_PERMISSION_ERROR_STR);
+        return false;
+      }
+    }
+
+    // ファイル追加時の権限判定
+    if (fileuploadList != null && fileuploadList.size() > 0) {
+      for (FileuploadLiteBean filebean : fileuploadList) {
+        if (filebean.isNewFile()) {
+          // 追加数に加える
+          adding++;
+        }
+      }
+      if (adding > 0 && !hasAttachmentInsertAuthority) {
+        // 添付ファイルに関する権限違反
+        msgList
+          .add(ALAccessControlConstants.DEF_ATTACHMENT_PERMISSION_ERROR_STR);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 }

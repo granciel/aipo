@@ -112,6 +112,12 @@ public class ScheduleWeeklyJSONFormData {
 
   private boolean isDayOffHoliday; // 祝日を休日にするかどうか
 
+  /** 添付ファイル追加へのアクセス権限の有無 */
+  private boolean hasAttachmentInsertAuthority;
+
+  /** 添付ファイル削除へのアクセス権限の有無 */
+  private boolean hasAttachmentDeleteAuthority;
+
   public void initField() {
     aclPortletFeature = ALAccessControlConstants.POERTLET_FEATURE_SCHEDULE_SELF;
   }
@@ -151,6 +157,10 @@ public class ScheduleWeeklyJSONFormData {
         rundata,
         context,
         ALAccessControlConstants.VALUE_ACL_LIST);
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_EXPORT);
 
       AjaxScheduleResultData rd;
       ScheduleBean bean;
@@ -312,6 +322,9 @@ public class ScheduleWeeklyJSONFormData {
         rundata,
         context,
         ALAccessControlConstants.VALUE_ACL_UPDATE);
+
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
       boolean res = false;
       if (isOverQuota()) {
         msgList.add(ALLocalizationUtils
@@ -349,6 +362,9 @@ public class ScheduleWeeklyJSONFormData {
         rundata,
         context,
         ALAccessControlConstants.VALUE_ACL_INSERT);
+
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
       boolean res = false;
       if (isOverQuota()) {
         msgList.add(ALLocalizationUtils
@@ -1203,6 +1219,63 @@ public class ScheduleWeeklyJSONFormData {
     return true;
   }
 
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  private boolean doCheckAttachmentAclPermission(RunData rundata,
+      Context context, int defineAclType) {
+
+    if (defineAclType == 0) {
+      return true;
+    }
+
+    // アクセス権限のチェックをしない場合
+    boolean checkAttachmentAuthority = isCheckAttachmentAuthority();
+    if (!checkAttachmentAuthority) {
+      return true;
+    }
+
+    ALAccessControlFactoryService aclservice =
+      (ALAccessControlFactoryService) ((TurbineServices) TurbineServices
+        .getInstance()).getService(ALAccessControlFactoryService.SERVICE_NAME);
+    ALAccessControlHandler aclhandler = aclservice.getAccessControlHandler();
+
+    return aclhandler.hasAuthority(
+      ALEipUtils.getUserId(rundata),
+      ALAccessControlConstants.POERTLET_FEATURE_ATTACHMENT,
+      defineAclType);
+  }
+
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  private void doCheckAttachmentInsertAclPermission(RunData rundata,
+      Context context) { // ファイル追加権限の有無
+    hasAttachmentInsertAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_INSERT);
+  }
+
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  private void doCheckAttachmentDeleteAclPermission(RunData rundata,
+      Context context) { // ファイル削除権限の有無
+    hasAttachmentDeleteAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_DELETE);
+  }
+
   private void sendEventLog(RunData rundata, Context context) {
     ALEipUtils.setTemp(
       rundata,
@@ -1307,6 +1380,24 @@ public class ScheduleWeeklyJSONFormData {
     }
 
     return true;
+  }
+
+  /**
+   * ファイルアップロードアクセス権限チェック用メソッド。<br />
+   * ファイルアップのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  private boolean isCheckAttachmentAuthority() {
+    return true;
+  }
+
+  private boolean hasAttachmentInsertAuthority() {
+    return hasAttachmentInsertAuthority;
+  }
+
+  private boolean hasAttachmentDeleteAuthority() {
+    return hasAttachmentDeleteAuthority;
   }
 
 }

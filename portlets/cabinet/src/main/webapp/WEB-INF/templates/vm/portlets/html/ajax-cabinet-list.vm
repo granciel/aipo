@@ -102,7 +102,11 @@
 *#
 ##ファイルネーム
 #ALtdcellheaderAtt("class='mb_hide'")
+#if($result.hasAttachmentAuthority())
 <div><a #if("$!{client}"=="IPHONE" || $!record.AcceptInline)target="_blank"#end href="$jslink.getTemplate("CabinetFileRawScreen").addPathInfo("entityid",${record.FileId}).addPathInfo("f",${record.URLEncodedFileName})">$record.WbrFileName</a></div>
+#else
+<div>$record.WbrFileName</div>
+#end
 #ALtdcellfooter()
 ##タイトル
 #ALtdcellheader()

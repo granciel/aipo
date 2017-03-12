@@ -45,7 +45,11 @@
 			#if($!record.AttachmentFileList && $!record.AttachmentFileList.size() > 0)
 				<ul>
 				#foreach( $attachmentFile in $!record.AttachmentFileList )
+					#if($result.hasAttachmentAuthority())
 					<li><a #if("$!{client}"=="IPHONE" || $!attachmentFile.AcceptInline)target="_blank"#end href="$jslink.getTemplate("GpdbRecordFileRawScreen").addQueryData("entityid", $record.GpdbRecordId).addQueryData("attachmentIndex", $attachmentFile.FileId).addPathInfo("f", ${attachmentFile.getURLEncodedValue()})">$result.getStringCR($attachmentFile.FileNameField)</a></li>
+					#else
+					<li>$result.getStringCR($attachmentFile.FileNameField)</li>
+					#end
 				#end
 				</ul>
 			#end
@@ -56,6 +60,7 @@
 			#if($!record.AttachmentFileList && $!record.AttachmentFileList.size() > 0)
 				<ul>
 				#foreach( $attachmentFile in $!record.AttachmentFileList )
+					#if($result.hasAttachmentAuthority())
 					<li><a #if("$!{client}"=="IPHONE" || $!attachmentFile.AcceptInline)target="_blank"#end href="$jslink.getTemplate("GpdbRecordFileRawScreen").addQueryData("entityid", $record.GpdbRecordId).addQueryData("attachmentIndex", $attachmentFile.FileId).addPathInfo("f", ${attachmentFile.getURLEncodedValue()})">$result.getStringCR($attachmentFile.FileNameField)</a>
 					#if($attachmentFile.isImage())
 						<div id='popc' style='position:absolute'>
@@ -66,6 +71,9 @@
 						</div>
 					#end
 					</li>
+					#else
+					<li>$result.getStringCR($attachmentFile.FileNameField)</li>
+					#end
 				#end
 				</ul>
 			#end

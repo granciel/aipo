@@ -123,6 +123,9 @@ public class ReportSelectData extends
 
   private boolean isFileUploadable;
 
+  /** 添付ファイル追加へのアクセス権限の有無 */
+  private boolean hasAttachmentInsertAuthority;
+
   private boolean isAdmin;
 
   /**
@@ -134,6 +137,8 @@ public class ReportSelectData extends
   @Override
   public void init(ALAction action, RunData rundata, Context context)
       throws ALPageNotFoundException, ALDBErrorException {
+    doCheckAttachmentInsertAclPermission(rundata, context);
+
     uid = ALEipUtils.getUserId(rundata);
 
     // if (ReportUtils.hasResetFlag(rundata, context)) {
@@ -518,6 +523,10 @@ public class ReportSelectData extends
         rundata,
         context,
         ALAccessControlConstants.VALUE_ACL_DETAIL);
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_EXPORT);
       action.setMode(ALEipConstants.MODE_DETAIL);
       List<EipTReport> aList = selectDetailList(rundata, context);
       if (aList != null) {
@@ -678,31 +687,33 @@ public class ReportSelectData extends
         rd.setMemberList(ALEipUtils.getUsersFromSelectQuery(query1));
       }
 
-      // ファイルリスト
-      List<EipTReportFile> list =
-        ReportUtils
-          .getSelectQueryForFiles(record.getReportId().intValue())
-          .fetchList();
-      if (list != null && list.size() > 0) {
-        List<FileuploadBean> attachmentFileList =
-          new ArrayList<FileuploadBean>();
-        FileuploadBean filebean = null;
-        for (EipTReportFile file : list) {
-          String realname = file.getFileName();
-          javax.activation.DataHandler hData =
-            new javax.activation.DataHandler(
-              new javax.activation.FileDataSource(realname));
+      if (hasAttachmentAuthority()) {
+        // ファイルリスト
+        List<EipTReportFile> list =
+          ReportUtils
+            .getSelectQueryForFiles(record.getReportId().intValue())
+            .fetchList();
+        if (list != null && list.size() > 0) {
+          List<FileuploadBean> attachmentFileList =
+            new ArrayList<FileuploadBean>();
+          FileuploadBean filebean = null;
+          for (EipTReportFile file : list) {
+            String realname = file.getFileName();
+            javax.activation.DataHandler hData =
+              new javax.activation.DataHandler(
+                new javax.activation.FileDataSource(realname));
 
-          filebean = new FileuploadBean();
-          filebean.setFileId(file.getFileId().intValue());
-          filebean.setFileName(realname);
-          if (hData != null) {
-            filebean.setContentType(hData.getContentType());
+            filebean = new FileuploadBean();
+            filebean.setFileId(file.getFileId().intValue());
+            filebean.setFileName(realname);
+            if (hData != null) {
+              filebean.setContentType(hData.getContentType());
+            }
+            filebean.setIsImage(FileuploadUtils.isImage(realname));
+            attachmentFileList.add(filebean);
           }
-          filebean.setIsImage(FileuploadUtils.isImage(realname));
-          attachmentFileList.add(filebean);
+          rd.setAttachmentFiles(attachmentFileList);
         }
-        rd.setAttachmentFiles(attachmentFileList);
       }
       rd.setCreateDate(record.getCreateDate());
       rd.setUpdateDate(record.getUpdateDate());
@@ -815,5 +826,23 @@ public class ReportSelectData extends
 
   public boolean isAdmin() {
     return isAdmin;
+  }
+
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected void doCheckAttachmentInsertAclPermission(RunData rundata,
+      Context context) { // ファイル追加権限の有無
+    hasAttachmentInsertAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_INSERT);
+  }
+
+  public boolean hasAttachmentInsertAuthority() {
+    return hasAttachmentInsertAuthority;
   }
 }

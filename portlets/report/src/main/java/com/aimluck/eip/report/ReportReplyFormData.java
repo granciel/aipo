@@ -522,6 +522,9 @@ public class ReportReplyFormData extends ALAbstractFormData {
         context,
         ALAccessControlConstants.VALUE_ACL_INSERT);
 
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
+
       action.setMode(ALEipConstants.MODE_INSERT);
       List<String> reportList = new ArrayList<String>();
       setValidator();
@@ -531,7 +534,9 @@ public class ReportReplyFormData extends ALAbstractFormData {
           .getl10n("COMMON_FULL_DISK_DELETE_DETA_OR_CHANGE_PLAN"));
       } else {
         res =
-          (setFormData(rundata, context, reportList) && validate(reportList) && insertFormData(
+          (setFormData(rundata, context, reportList)
+            && validate(reportList)
+            && extValidate(rundata, context, reportList) && insertFormData(
             rundata,
             context,
             reportList));
@@ -781,10 +786,25 @@ public class ReportReplyFormData extends ALAbstractFormData {
 
   /**
    * 他ユーザのトピックを追加する権限があるかどうかを返します。
-   * 
+   *
    * @return
    */
   public boolean hasAclInsertReportReply() {
     return hasAclInsertReportReply;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    return FileuploadUtils.insertValidate(
+      msgList,
+      fileuploadList,
+      hasAttachmentInsertAuthority());
   }
 }

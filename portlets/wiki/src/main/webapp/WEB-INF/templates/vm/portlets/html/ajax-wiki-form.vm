@@ -100,16 +100,16 @@
 			</p>
 			<div class="wikiPreview auiWikiContent" id="wikiPreview" style="display: none;"></div>
         </tr>
-		<tr #if(!$result.isFileUploadable())class="mb_hide"#end>
+		<tr #if(!$result.isFileUploadable() || (!$result.hasAttachmentInsertAuthority() && !$result.hasAttachmentDeleteAuthority()))class="hide"#end>
         <td class="caption">$l10n.WIKI_FILE_ATTACH</td>
             <td>
               <div class="clearfix">
               <div>
-              #IFFileUpload()
+              #ACLIFFileUpload()
               </div>
               <ul id="attachments_$!{portlet.ID}" class="attachments">
                 #foreach($record in $!result.AttachmentFileNameList )
-                  <li data-fileid="s${record.FileId}" data-filename="$!{record.FileName}"><span>$!record.FileName</span><span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">$l10n.DELETE</span></li>
+                	#ACLFileList($record)
                 #end
               </ul>
               <input type="hidden" id="folderName_$!{portlet.ID}" name="folderName" value="$!result.FolderName" />

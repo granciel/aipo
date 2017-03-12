@@ -90,7 +90,11 @@ $l10n.CABINET_SEARCH_RESULT_FILE_LIST
 <a href="javascript:void(0);" onclick="aipo.common.showDialog('$!utils.escapeXML($!jslink.getPortletById($!portlet.ID).addQueryData("template","CabinetFileDetailScreen").addQueryData("entityid",$record.FileId))');">$!record.FileTitle</a>
 #ALtdcellfooter()
 #ALtdcellheader()
+#if($result.hasAttachmentAuthority())
 <a #if("$!{client}"=="IPHONE" || $!record.AcceptInline)target="_blank"#end href="$jslink.getTemplate("CabinetFileRawScreen").addPathInfo("entityid",${record.FileId}).addPathInfo("f",${record.FileName})">$record.FileName</a>
+#else
+$record.FileName
+#end
 #ALtdcellfooter()
 #ALtdcell($record.UpdateDate)
 <td class="item" align="right">$record.FileSize</td>

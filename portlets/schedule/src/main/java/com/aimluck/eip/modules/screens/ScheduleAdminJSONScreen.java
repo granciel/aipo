@@ -1,6 +1,6 @@
 /*
  * Aipo is a groupware program developed by TOWN, Inc.
- * Copyright (C) 2004-2015 TOWN, Inc.
+ * Copyright (C) 2004-2016 TOWN, Inc.
  * http://www.aipo.com
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,54 +16,61 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.aimluck.eip.modules.screens;
 
-import java.util.Date;
+import net.sf.json.JSONArray;
 
 import org.apache.jetspeed.services.logging.JetspeedLogFactoryService;
 import org.apache.jetspeed.services.logging.JetspeedLogger;
 import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
 
-import com.aimluck.eip.cayenne.om.portlet.EipTTimelineUrl;
-import com.aimluck.eip.timeline.util.TimelineUtils;
+import com.aimluck.eip.common.ALEipConstants;
+import com.aimluck.eip.schedule.ScheduleAdminFormData;
 
 /**
- * 掲示板トピックの添付ファイルのサムネイルを処理するクラスです。
- */
-public class TimelineUrlThumbnailScreen extends FileuploadThumbnailScreen {
+*
+*/
+public class ScheduleAdminJSONScreen extends ALJSONScreen {
 
   /** logger */
   private static final JetspeedLogger logger = JetspeedLogFactoryService
-    .getLogger(TimelineFileThumbnailScreen.class.getName());
+    .getLogger(ScheduleAdminJSONScreen.class.getName());
 
   /**
-   *
    * @param rundata
+   * @param context
+   * @return
    * @throws Exception
    */
   @Override
-  protected void doOutput(RunData rundata) throws Exception {
+  protected String getJSONString(RunData rundata, Context context)
+      throws Exception {
+    String result = new JSONArray().toString();
+    String mode = this.getMode();
     try {
-      EipTTimelineUrl file = TimelineUtils.getEipTTimelineUrl(rundata);
+      if (ALEipConstants.MODE_UPDATE.equals(mode)) {
+        ScheduleAdminFormData formData = new ScheduleAdminFormData();
+        formData.initField();
 
-      super.setFile(file.getThumbnail());
-      super.setFileName(file.getTitle());
-      // EipTTimelineUrl に更新時間のカラムがないため、現在時間で代替
-      super.setLastModified(new Date());
-      super.doOutput(rundata);
+        if (formData.doUpdate(this, rundata, context)) {
+        } else {
+          JSONArray json =
+            JSONArray
+              .fromObject(context.get(ALEipConstants.ERROR_MESSAGE_LIST));
+          result = json.toString();
+        }
+      }
     } catch (Exception e) {
-      logger.error("TimelineUrlThumbnailScreen.doOutput", e);
+      logger.error("[ScheduleAdminJSONScreen]", e);
     }
+    return result;
   }
 
-  /**
-   * ファイルアクセス権限チェック用メソッド。<br />
-   * ファイルのアクセス権限をチェックするかどうかを判定します。
-   *
-   * @return
-   */
   @Override
-  public boolean isCheckAttachmentAuthority() {
-    return false;
+  protected String getPortletName() {
+    // アプリ管理
+    return "GadgetsAdmin";
   }
 }

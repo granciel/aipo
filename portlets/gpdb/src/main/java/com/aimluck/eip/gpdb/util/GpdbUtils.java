@@ -2139,7 +2139,7 @@ public class GpdbUtils {
 
   /**
    * 表示切り替えのリセットフラグがあるかを返す．
-   * 
+   *
    * @param rundata
    * @param context
    * @return
@@ -2151,7 +2151,7 @@ public class GpdbUtils {
 
   /**
    * フィルターを初期化する．
-   * 
+   *
    * @param rundata
    * @param context
    * @param className
@@ -2163,7 +2163,7 @@ public class GpdbUtils {
 
   /**
    * 検索クエリ用のキーワードを取得します。
-   * 
+   *
    * @param rundata
    * @param context
    * @return

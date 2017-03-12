@@ -28,13 +28,14 @@ import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 
 import com.aimluck.eip.modules.actions.common.ALAction;
+import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.accessctl.ALAccessControlFactoryService;
 import com.aimluck.eip.services.accessctl.ALAccessControlHandler;
 import com.aimluck.eip.util.ALEipUtils;
 
 /**
  * チェックボックスで選択された項目に対してのアクションを定義するクラスです。 <br />
- * 
+ *
  */
 public abstract class ALAbstractCheckList {
 
@@ -48,7 +49,7 @@ public abstract class ALAbstractCheckList {
 
   /**
    * チェックリストで選択された項目に対してアクションを実行します。
-   * 
+   *
    * @param action
    * @param rundata
    * @param context
@@ -95,7 +96,7 @@ public abstract class ALAbstractCheckList {
 
   /**
    * チェックリストで選択された項目に対してアクションを実行するための抽象メソッドです。
-   * 
+   *
    * @param rundata
    * @param context
    * @param values
@@ -109,7 +110,7 @@ public abstract class ALAbstractCheckList {
 
   /**
    * セキュリティをチェックします。
-   * 
+   *
    * @return
    */
   protected boolean doCheckSecurity(RunData rundata, Context context) {
@@ -126,7 +127,7 @@ public abstract class ALAbstractCheckList {
 
   /**
    * アクセス権限をチェックします。
-   * 
+   *
    * @return
    */
   protected boolean doCheckAclPermission(RunData rundata, Context context,
@@ -159,9 +160,48 @@ public abstract class ALAbstractCheckList {
   }
 
   /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected boolean doCheckAttachmentAclPermission(RunData rundata,
+      Context context, int defineAclType) {
+
+    if (defineAclType == 0) {
+      return true;
+    }
+
+    // アクセス権限のチェックをしない場合
+    boolean checkAttachmentAuthority = isCheckAttachmentAuthority();
+    if (!checkAttachmentAuthority) {
+      return true;
+    }
+
+    ALAccessControlFactoryService aclservice =
+      (ALAccessControlFactoryService) ((TurbineServices) TurbineServices
+        .getInstance()).getService(ALAccessControlFactoryService.SERVICE_NAME);
+    ALAccessControlHandler aclhandler = aclservice.getAccessControlHandler();
+
+    return aclhandler.hasAuthority(
+      ALEipUtils.getUserId(rundata),
+      ALAccessControlConstants.POERTLET_FEATURE_ATTACHMENT,
+      defineAclType);
+  }
+
+  /**
+   * ファイルアップロードアクセス権限チェック用メソッド。<br />
+   * ファイルアップのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  public boolean isCheckAttachmentAuthority() {
+    return true;
+  }
+
+  /**
    * アクセス権限用メソッド。<br />
    * アクセス権限の有無を返します。
-   * 
+   *
    * @return
    */
   public boolean hasAuthority() {
@@ -171,7 +211,7 @@ public abstract class ALAbstractCheckList {
   /**
    * アクセス権限チェック用メソッド。<br />
    * アクセス権限を返します。
-   * 
+   *
    * @return
    */
   protected int getDefineAclType() {
@@ -181,7 +221,7 @@ public abstract class ALAbstractCheckList {
   /**
    * アクセス権限チェック用メソッド。<br />
    * アクセス権限の機能名を返します。
-   * 
+   *
    * @return
    */
   public String getAclPortletFeature() {

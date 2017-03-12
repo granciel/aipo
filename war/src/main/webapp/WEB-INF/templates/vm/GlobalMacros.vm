@@ -1904,6 +1904,17 @@ $item.get(0)
 </iframe>
 #end
 
+#macro(ACLIFFileUpload)
+#if($result.hasAttachmentInsertAuthority())
+#IFFileUpload()
+#end
+#end
+
+#macro(ACLFileList $record)
+<li data-fileid="s${record.FileId}" data-filename="$!{record.FileName}"><span>$!record.FileName</span>#if($result.hasAttachmentDeleteAuthority())<span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">$l10n.DELETE</span>#end</li>
+#end
+
+
 #macro(AuiInformation $title $text $cookie $flag)
 #if (${flag})
 <div class="auiInfo" id="$!{cookie}"><div class="inner clearfix">

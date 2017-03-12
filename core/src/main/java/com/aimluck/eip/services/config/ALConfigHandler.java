@@ -111,6 +111,13 @@ public abstract class ALConfigHandler {
       }
     },
 
+    SCHEDULE_MAPS_ENABLED("config.schedule.maps.enabled") {
+      @Override
+      public String defaultValue() {
+        return JetspeedResources.getString("config.schedule.maps.enabled", "F");
+      }
+    },
+
     HOLIDAY_OF_WEEK("holiday.of.week") {
       @Override
       public String defaultValue() {
@@ -118,6 +125,7 @@ public abstract class ALConfigHandler {
         // 1桁 法定休日の曜日
         // 1桁 国民の祝日を休日にするかどうか
         return JetspeedResources.getString("holiday.of.week", "100000111");
+
       }
     },
 

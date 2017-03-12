@@ -44,6 +44,7 @@ import com.aimluck.eip.cayenne.om.portlet.EipTReportMemberMap;
 import com.aimluck.eip.cayenne.om.security.TurbineUser;
 import com.aimluck.eip.common.ALAbstractFormData;
 import com.aimluck.eip.common.ALDBErrorException;
+import com.aimluck.eip.common.ALEipConstants;
 import com.aimluck.eip.common.ALEipManager;
 import com.aimluck.eip.common.ALEipPost;
 import com.aimluck.eip.common.ALEipUser;
@@ -1026,5 +1027,52 @@ public class ReportFormData extends ALAbstractFormData {
 
   public static String toTwoDigitString(int num) {
     return ALStringUtil.toTwoDigitString(new ALNumberField(num));
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      try {
+        // オブジェクトモデルを取得
+        EipTReport report = ReportUtils.getEipTReport(rundata, context);
+        if (report == null) {
+          return false;
+        }
+        // サーバーに残すファイルのID
+        List<Integer> formIdList = getRequestedHasFileIdList(fileuploadList);
+        // 現在選択しているエントリが持っているファイル
+        List<EipTReportFile> files = ReportUtils.getEipTReportFile(report);
+        List<Integer> existFileIdList = new ArrayList<Integer>();
+        if (files != null) {
+          for (EipTReportFile file : files) {
+            existFileIdList.add(file.getFileId());
+          }
+        }
+
+        return FileuploadUtils.updateValidate(
+          msgList,
+          formIdList,
+          existFileIdList,
+          fileuploadList,
+          hasAttachmentInsertAuthority(),
+          hasAttachmentDeleteAuthority());
+      } catch (Exception ex) {
+        logger.error("ReportFormData.", ex);
+        return false;
+      }
+    }
+    return true;
   }
 }

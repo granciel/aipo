@@ -382,8 +382,9 @@ aipo.calendar.populateWeeklySchedule = function(_portletId, params) {
 
 	                if(data.holiday[i] != "set"){
 	                	tmpNode2.innerHTML = data.holiday[i];
+	                }else{
+	                	tmpNode2.innerHTML = "";
 	                }
-
 
 	                var temptoday = data.today + "-00-00";
 	                /*

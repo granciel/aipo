@@ -45,6 +45,7 @@ import com.aimluck.eip.common.ALFileNotRemovedException;
 import com.aimluck.eip.common.ALPageNotFoundException;
 import com.aimluck.eip.common.ALPermissionException;
 import com.aimluck.eip.fileupload.beans.FileuploadLiteBean;
+import com.aimluck.eip.fileupload.util.FileuploadUtils;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.msgboard.util.MsgboardUtils;
 import com.aimluck.eip.orm.Database;
@@ -61,7 +62,7 @@ import com.aimluck.eip.util.ALLocalizationUtils;
 
 /**
  * 掲示板トピックのフォームデータを管理するクラスです。 <BR>
- * 
+ *
  */
 public class MsgboardTopicFormData extends ALAbstractFormData {
 
@@ -112,12 +113,12 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
   private boolean hasAclDeleteTopicOthers;
 
   /**
-   * 
+   *
    * @param action
    * @param rundata
    * @param context
-   * 
-   * 
+   *
+   *
    */
   @Override
   public void init(ALAction action, RunData rundata, Context context)
@@ -156,8 +157,8 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * 各フィールドを初期化します。 <BR>
-   * 
-   * 
+   *
+   *
    */
   @Override
   public void initField() {
@@ -185,7 +186,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
   }
 
   /**
-   * 
+   *
    * @param rundata
    * @param context
    */
@@ -195,8 +196,8 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * 掲示板の各フィールドに対する制約条件を設定します。 <BR>
-   * 
-   * 
+   *
+   *
    */
   @Override
   protected void setValidator() {
@@ -218,10 +219,10 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * トピックのフォームに入力されたデータの妥当性検証を行います。 <BR>
-   * 
+   *
    * @param msgList
    * @return TRUE 成功 FALSE 失敗
-   * 
+   *
    */
   @Override
   protected boolean validate(List<String> msgList) {
@@ -239,7 +240,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * トピックをデータベースから読み出します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -285,7 +286,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * トピックをデータベースから削除します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -397,7 +398,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * トピックをデータベースに格納します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -511,7 +512,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * トピックカテゴリをデータベースに格納します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -577,7 +578,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * データベースに格納されているトピックを更新します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -682,7 +683,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
   }
 
   /**
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -707,7 +708,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * カテゴリIDを取得します。 <BR>
-   * 
+   *
    * @return
    */
   public ALNumberField getCategoryId() {
@@ -716,7 +717,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * メモを取得します。 <BR>
-   * 
+   *
    * @return
    */
   public ALStringField getNote() {
@@ -725,7 +726,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * トピック名を取得します。 <BR>
-   * 
+   *
    * @return
    */
   public ALStringField getTopicName() {
@@ -734,7 +735,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * カテゴリ一覧を取得します。 <BR>
-   * 
+   *
    * @return
    */
   public List<MsgboardCategoryResultData> getCategoryList() {
@@ -757,7 +758,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * カテゴリ名を取得します。
-   * 
+   *
    * @return
    */
   public ALStringField getCategoryName() {
@@ -774,7 +775,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * アクセス権限チェック用メソッド。 アクセス権限の機能名を返します。
-   * 
+   *
    * @return
    */
   @Override
@@ -788,7 +789,7 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * 他ユーザのトピックを編集する権限があるかどうかを返します。
-   * 
+   *
    * @return
    */
   public boolean hasAclUpdateTopicOthers() {
@@ -797,10 +798,81 @@ public class MsgboardTopicFormData extends ALAbstractFormData {
 
   /**
    * 他ユーザのトピックを削除する権限があるかどうかを返します。
-   * 
+   *
    * @return
    */
   public boolean hasAclDeleteTopicOthers() {
     return hasAclDeleteTopicOthers;
+  }
+
+  private List<Integer> getRequestedHasFileIdList(
+      List<FileuploadLiteBean> attachmentFileNameList) {
+    List<Integer> idlist = new ArrayList<Integer>();
+    FileuploadLiteBean filebean = null;
+    // if (attachmentFileNameList != null && !"".equals(attachmentFileNameList))
+    // {
+    if (attachmentFileNameList != null) {
+      int size = attachmentFileNameList.size();
+      for (int i = 0; i < size; i++) {
+        filebean = attachmentFileNameList.get(i);
+        if (!filebean.isNewFile()) {
+          int index = filebean.getFileId();
+          idlist.add(Integer.valueOf(index));
+        }
+      }
+    }
+    return idlist;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      try {
+        Integer topicId =
+          MsgboardUtils.getEipTMsgboardParentTopicId(rundata, context);
+
+        // サーバーに残すファイルのID
+        List<Integer> formIdList = getRequestedHasFileIdList(fileuploadList);
+        // 現在選択しているエントリが持っているファイル
+        // この辺の効率化が課題とは思うものの、一応動作はしているはず。
+        SelectQuery<EipTMsgboardFile> dbquery =
+          Database.query(EipTMsgboardFile.class);
+        dbquery.andQualifier(ExpressionFactory.matchDbExp(
+          EipTMsgboardFile.EIP_TMSGBOARD_TOPIC_PROPERTY,
+          topicId));
+        List<EipTMsgboardFile> existsFiles = dbquery.fetchList();
+
+        List<Integer> existFileIdList = new ArrayList<Integer>();
+        if (existsFiles != null) {
+          for (EipTMsgboardFile file : existsFiles) {
+            existFileIdList.add(file.getFileId());
+          }
+        }
+
+        return FileuploadUtils.updateValidate(
+          msgList,
+          formIdList,
+          existFileIdList,
+          fileuploadList,
+          hasAttachmentInsertAuthority(),
+          hasAttachmentDeleteAuthority());
+      } catch (Exception ex) {
+        logger.error("MsgboardTopicFormData.", ex);
+        return false;
+      }
+    }
+    return true;
   }
 }

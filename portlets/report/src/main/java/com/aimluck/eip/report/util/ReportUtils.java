@@ -337,6 +337,26 @@ public class ReportUtils {
   }
 
   /**
+   * Report オブジェクトモデルのIDを取得します。 <BR>
+   *
+   * @param rundata
+   * @param context
+   * @return
+   */
+  public static Integer getEipTReportId(RunData rundata, Context context) {
+    String requestid =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (requestid == null || (id = Integer.valueOf(requestid)) == null) {
+      // Request IDが空の場合
+      logger.debug("[ReportUtils] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
+  /**
    * Report オブジェクトモデルを取得します。 <BR>
    *
    * @param rundata

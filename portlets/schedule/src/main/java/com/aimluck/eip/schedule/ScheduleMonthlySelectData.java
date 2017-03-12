@@ -205,11 +205,17 @@ public class ScheduleMonthlySelectData extends AjaxScheduleMonthlySelectData {
     currentMonth.setValue(to.getTime());
 
     // 週の始まり
-    startDayOfWeek =
-      Integer.parseInt(ALEipUtils
+    String startDayOfWeekStr =
+      ALEipUtils
         .getPortlet(rundata, context)
         .getPortletConfig()
-        .getInitParameter("z1a-rows"));
+        .getInitParameter("z1a-rows");
+    if (startDayOfWeekStr != null) {
+      startDayOfWeek = Integer.parseInt(startDayOfWeekStr);
+    } else {
+      // ガラケーの場合 日曜始まりにしておく
+      startDayOfWeek = 1;
+    }
 
     // 自ポートレットからのリクエストであれば、パラメータを展開しセッションに保存する。
     if (ALEipUtils.isMatch(rundata, context)) {

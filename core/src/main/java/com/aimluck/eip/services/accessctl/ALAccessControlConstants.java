@@ -31,6 +31,10 @@ public class ALAccessControlConstants {
   public static final String DEF_PERMISSION_ERROR_STR =
     "アクセス権限がありません。システム管理者にお問い合わせください。";
 
+  /** 添付ファイルアクセス権限のパーミッションエラー時のエラー文 */
+  public static final String DEF_ATTACHMENT_PERMISSION_ERROR_STR =
+    "添付ファイルのアクセス権限がありません。システム管理者にお問い合わせください。";
+
   /** アクセス権（一覧表示） */
   public static final int VALUE_ACL_LIST = 1;
 
@@ -189,4 +193,7 @@ public class ALAccessControlConstants {
   /** アクセス権限の機能名（タイムライン（コメント）管理者） */
   public static final String POERTLET_FEATURE_TIMELINE_COMMENT =
     "timeline_comment";
+
+  /** アクセス権限の機能名（添付ファイル） */
+  public static final String POERTLET_FEATURE_ATTACHMENT = "attachment";
 }

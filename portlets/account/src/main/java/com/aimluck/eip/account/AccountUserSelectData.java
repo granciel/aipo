@@ -562,4 +562,15 @@ public class AccountUserSelectData extends
   public ALStringField getTargetKeyword() {
     return target_keyword;
   }
+
+  /**
+   * ファイルアップロードアクセス権限チェック用メソッド。<br />
+   * ファイルアップのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  @Override
+  public boolean isCheckAttachmentAuthority() {
+    return false;
+  }
 }

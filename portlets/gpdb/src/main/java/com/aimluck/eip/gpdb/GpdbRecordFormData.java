@@ -18,6 +18,7 @@
  */
 package com.aimluck.eip.gpdb;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import com.aimluck.commons.field.ALDateTimeField;
 import com.aimluck.commons.utils.ALStringUtil;
 import com.aimluck.eip.cayenne.om.portlet.EipTGpdb;
 import com.aimluck.eip.cayenne.om.portlet.EipTGpdbRecord;
+import com.aimluck.eip.cayenne.om.portlet.EipTGpdbRecordFile;
 import com.aimluck.eip.cayenne.om.security.TurbineUser;
 import com.aimluck.eip.common.ALAbstractFormData;
 import com.aimluck.eip.common.ALDBErrorException;
@@ -39,6 +41,7 @@ import com.aimluck.eip.common.ALEipConstants;
 import com.aimluck.eip.common.ALEipUser;
 import com.aimluck.eip.common.ALPageNotFoundException;
 import com.aimluck.eip.fileupload.beans.FileuploadLiteBean;
+import com.aimluck.eip.fileupload.util.FileuploadUtils;
 import com.aimluck.eip.gpdb.util.GpdbUtils;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.orm.Database;
@@ -727,4 +730,94 @@ public class GpdbRecordFormData extends ALAbstractFormData {
     return gpdb;
   }
 
+  private List<Integer> getRequestedHasFileIdList(
+      List<FileuploadLiteBean> attachmentFileNameList) {
+    List<Integer> idlist = new ArrayList<Integer>();
+    FileuploadLiteBean filebean = null;
+    // if (attachmentFileNameList != null && !"".equals(attachmentFileNameList))
+    // {
+    if (attachmentFileNameList != null) {
+      int size = attachmentFileNameList.size();
+      for (int i = 0; i < size; i++) {
+        filebean = attachmentFileNameList.get(i);
+        if (!filebean.isNewFile()) {
+          int index = filebean.getFileId();
+          idlist.add(Integer.valueOf(index));
+        }
+      }
+    }
+    return idlist;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  // @Override
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      for (GpdbItemResultData item : gpdbItemList) {
+        String type = item.getType().getValue(); // 入力形式
+        if (GpdbUtils.ITEM_TYPE_FILE.equals(type)
+          || GpdbUtils.ITEM_TYPE_IMAGE.equals(type)) {
+          List<FileuploadLiteBean> fileuploadList =
+            GpdbUtils.getFileuploadList(rundata, item
+              .getGpdbItemId()
+              .toString());
+
+          return FileuploadUtils.insertValidate(
+            msgList,
+            fileuploadList,
+            hasAttachmentInsertAuthority());
+        }
+      }
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+
+      try {
+        for (GpdbItemResultData item : gpdbItemList) {
+          String type = item.getType().getValue(); // 入力形式
+          if (GpdbUtils.ITEM_TYPE_FILE.equals(type)
+            || GpdbUtils.ITEM_TYPE_IMAGE.equals(type)) {
+
+            List<FileuploadLiteBean> fileuploadList =
+              GpdbUtils.getFileuploadList(rundata, item
+                .getGpdbItemId()
+                .toString());
+
+            // サーバーに残すファイルのID
+            List<Integer> formIdList =
+              getRequestedHasFileIdList(fileuploadList);
+            // 現在選択しているエントリが持っているファイル
+            List<EipTGpdbRecordFile> files =
+              GpdbUtils.getEipTGpdbRecordFileList(item
+                .getGpdbItemId()
+                .getValueWithInt());
+            List<Integer> existFileIdList = new ArrayList<Integer>();
+            if (files != null) {
+              for (EipTGpdbRecordFile file : files) {
+                existFileIdList.add(file.getFileId());
+              }
+            }
+
+            return FileuploadUtils.updateValidate(
+              msgList,
+              formIdList,
+              existFileIdList,
+              fileuploadList,
+              hasAttachmentInsertAuthority(),
+              hasAttachmentDeleteAuthority());
+          }
+        }
+
+      } catch (Exception ex) {
+        logger.error("BlogEntryFormData.", ex);
+        return false;
+      }
+    }
+    return true;
+  }
 }

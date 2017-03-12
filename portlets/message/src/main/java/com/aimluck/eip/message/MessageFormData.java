@@ -508,4 +508,22 @@ public class MessageFormData extends ALAbstractFormData {
   public int getRoomId() {
     return (int) roomId.getValue();
   }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    }
+    return true;
+  }
 }

@@ -599,7 +599,10 @@ public class WorkflowSelectData extends
    */
   @Override
   protected Object getResultDataDetail(EipTWorkflowRequest obj) {
-    return WorkflowUtils.getResultDataDetail(obj, login_user);
+    return WorkflowUtils.getResultDataDetail(
+      obj,
+      login_user,
+      hasAttachmentAuthority());
   }
 
   /**

@@ -100,17 +100,21 @@
 	#elseif ($type=='06' || $type=='07')
 		##ファイル、画像
 		#ALtditemheader()
+		<div #if(!$result.hasAttachmentInsertAuthority() && !$result.hasAttachmentDeleteAuthority())class="hide"#end>
 		<div class="clearfix">
+ 		#if($result.hasAttachmentInsertAuthority())
  		<div>
 		<iframe name="$field" id="$field" allowtransparency="true" class="auiInputFileFrame" src="$!jslink.getPortletById($!{portlet.ID}).addQueryData('template','FileuploadadvFormScreen').addQueryData('mode','miniform').addQueryData('msize','1').addQueryData('keyid', $item.GpdbItemId)" frameborder="0" scrolling="no" ></iframe>
 		</div>
+		#end
 		<ul id="attachments_$!{portlet.ID}_$!{item.GpdbItemId}" class="attachments">
 		#foreach($line in $!record.AttachmentFileList)
-			<li data-fileid="s${line.FileId}" data-filename="$!{line.FileName}"><span>$!line.FileName</span><span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">$l10n.GPDB_DELETE</span></li>
+			#ACLFileList($line)
 		#end
 		</ul>
 		<div id="messageDiv_$!{portlet.ID}_$!{item.GpdbItemId}"></div>
 		<input type="hidden" id="folderName_$!{portlet.ID}_$!{item.GpdbItemId}" name="folderName_$!{item.GpdbItemId}" value="$!result.FolderName" />
+		</div>
 		</div>
 		#ALtditemfooter()
 	#elseif ($type=='08')

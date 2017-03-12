@@ -57,6 +57,8 @@ import com.aimluck.eip.schedule.util.ScheduleUtils;
 import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.accessctl.ALAccessControlFactoryService;
 import com.aimluck.eip.services.accessctl.ALAccessControlHandler;
+import com.aimluck.eip.services.config.ALConfigHandler;
+import com.aimluck.eip.services.config.ALConfigService;
 import com.aimluck.eip.services.reminder.ALReminderHandler.ReminderCategory;
 import com.aimluck.eip.services.reminder.ALReminderService;
 import com.aimluck.eip.services.reminder.model.ALReminderItem;
@@ -85,6 +87,9 @@ public class ScheduleSelectData extends
 
   /** <code>type</code> マップ種別（ユーザ or 設備） */
   private String type;
+
+  /** <code</code> マップ有効性（有効 or 無効） */
+  private String enabledMapsFlag;
 
   /** <code>loginuserid</code> ログインユーザーID */
   private int loginuserid;
@@ -171,6 +176,8 @@ public class ScheduleSelectData extends
 
     loginuserid = ALEipUtils.getUserId(rundata);
     statusList = new HashMap<Integer, String>();
+    enabledMapsFlag =
+      ALConfigService.get(ALConfigHandler.Property.SCHEDULE_MAPS_ENABLED);
 
     if (rundata.getParameters().containsKey("userid")) {
       String tmpid = rundata.getParameters().getString("userid");
@@ -641,31 +648,34 @@ public class ScheduleSelectData extends
 
       return null;
     }
-    List<EipTScheduleFile> list =
-      getSelectQueryForFiles(record.getScheduleId().intValue()).fetchList();
-    if (list != null && list.size() > 0) {
-      List<FileuploadBean> attachmentFileList = new ArrayList<FileuploadBean>();
-      FileuploadBean filebean = null;
-      EipTScheduleFile file = null;
-      int size = list.size();
-      for (int i = 0; i < size; i++) {
-        file = list.get(i);
-        String realname = file.getFileName();
-        javax.activation.DataHandler hData =
-          new javax.activation.DataHandler(new javax.activation.FileDataSource(
-            realname));
+    if (hasAttachmentAuthority()) {
+      List<EipTScheduleFile> list =
+        getSelectQueryForFiles(record.getScheduleId().intValue()).fetchList();
+      if (list != null && list.size() > 0) {
+        List<FileuploadBean> attachmentFileList =
+          new ArrayList<FileuploadBean>();
+        FileuploadBean filebean = null;
+        EipTScheduleFile file = null;
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+          file = list.get(i);
+          String realname = file.getFileName();
+          javax.activation.DataHandler hData =
+            new javax.activation.DataHandler(
+              new javax.activation.FileDataSource(realname));
 
-        filebean = new FileuploadBean();
-        filebean.setFileId(file.getFileId().intValue());
-        filebean.setFileName(realname);
-        filebean.setUserId(file.getOwnerId());
-        if (hData != null) {
-          filebean.setContentType(hData.getContentType());
+          filebean = new FileuploadBean();
+          filebean.setFileId(file.getFileId().intValue());
+          filebean.setFileName(realname);
+          filebean.setUserId(file.getOwnerId());
+          if (hData != null) {
+            filebean.setContentType(hData.getContentType());
+          }
+          filebean.setIsImage(FileuploadUtils.isImage(realname));
+          attachmentFileList.add(filebean);
         }
-        filebean.setIsImage(FileuploadUtils.isImage(realname));
-        attachmentFileList.add(filebean);
+        rd.setAttachmentFiles(attachmentFileList);
       }
-      rd.setAttachmentFiles(attachmentFileList);
     }
 
     if (ALReminderService.isEnabled()) {
@@ -895,5 +905,9 @@ public class ScheduleSelectData extends
 
   public boolean hasReminderItem() {
     return reminderItem != null ? true : false;
+  }
+
+  public boolean enabledMapsFlag() {
+    return "T".equals(enabledMapsFlag);
   }
 }

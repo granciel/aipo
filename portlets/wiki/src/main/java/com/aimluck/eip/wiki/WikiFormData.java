@@ -42,6 +42,7 @@ import com.aimluck.eip.common.ALDBErrorException;
 import com.aimluck.eip.common.ALEipConstants;
 import com.aimluck.eip.common.ALPageNotFoundException;
 import com.aimluck.eip.fileupload.beans.FileuploadLiteBean;
+import com.aimluck.eip.fileupload.util.FileuploadUtils;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.orm.Database;
 import com.aimluck.eip.orm.query.SelectQuery;
@@ -658,5 +659,77 @@ public class WikiFormData extends ALAbstractFormData {
 
   public List<WikiResultData> getTopWikiList() {
     return topWikiList;
+  }
+
+  private List<Integer> getRequestedHasFileIdList(
+      List<FileuploadLiteBean> attachmentFileNameList) {
+    List<Integer> idlist = new ArrayList<Integer>();
+    FileuploadLiteBean filebean = null;
+    // if (attachmentFileNameList != null && !"".equals(attachmentFileNameList))
+    // {
+    if (attachmentFileNameList != null) {
+      int size = attachmentFileNameList.size();
+      for (int i = 0; i < size; i++) {
+        filebean = attachmentFileNameList.get(i);
+        if (!filebean.isNewFile()) {
+          int index = filebean.getFileId();
+          idlist.add(Integer.valueOf(index));
+        }
+      }
+    }
+    return idlist;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      try {
+        int wikiId = WikiUtils.getEipTWikiId(rundata, context);
+
+        // サーバーに残すファイルのID
+        List<Integer> formIdList = getRequestedHasFileIdList(fileuploadList);
+        // 現在選択しているエントリが持っているファイル
+        // この辺の効率化が課題とは思うものの、一応動作はしているはず。
+        SelectQuery<EipTWikiFile> dbquery = Database.query(EipTWikiFile.class);
+        dbquery.andQualifier(ExpressionFactory.matchExp(
+          EipTWikiFile.WIKI_ID_PROPERTY,
+          wikiId));
+        // dbquery.andQualifier(ExpressionFactory.matchExp(
+        // EipTWikiFile.WIKI_ID_PROPERTY,
+        // wikiId));
+        List<EipTWikiFile> existsFiles = dbquery.fetchList();
+
+        List<Integer> existFileIdList = new ArrayList<Integer>();
+        if (existsFiles != null) {
+          for (EipTWikiFile file : existsFiles) {
+            existFileIdList.add(file.getFileId());
+          }
+        }
+
+        return FileuploadUtils.updateValidate(
+          msgList,
+          formIdList,
+          existFileIdList,
+          fileuploadList,
+          hasAttachmentInsertAuthority(),
+          hasAttachmentDeleteAuthority());
+      } catch (Exception ex) {
+        logger.error("WikiFormData.", ex);
+        return false;
+      }
+    }
+    return true;
   }
 }

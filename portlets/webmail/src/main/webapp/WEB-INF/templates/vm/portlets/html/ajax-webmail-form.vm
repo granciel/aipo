@@ -66,16 +66,16 @@
 #ALtditemheader()
 #ALtextarea('body' $!result.Body 10 40)
 #ALtditemfooter()
-<tr #if(!$result.isFileUploadable())class="mb_hide"#end>
+<tr #if(!$result.isFileUploadable() || (!$result.hasAttachmentInsertAuthority() && !$result.hasAttachmentDeleteAuthority()))class="hide"#end>
 <td class="caption">$l10n.WEBMAIL_ATTACHMENT</td>
 <td>
   <div class="clearfix">
   <div>
-  #IFFileUpload()
+  #ACLIFFileUpload()
   </div>
   <ul id="attachments_$!{portlet.ID}" class="attachments">
    #foreach($record in $!result.AttachmentFileNameList )
-    <li data-fileid="${record.FileId}" data-filename="$!{record.FileName}"><span>$!record.FileName</span><span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">削除</span></li>
+    <li data-fileid="${record.FileId}" data-filename="$!{record.FileName}"><span>$!record.FileName</span>#if($result.hasAttachmentDeleteAuthority())<span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">削除</span>#end</li>
    #end
   </ul>
   <input type="hidden" id="folderName_$!{portlet.ID}" name="folderName" value="$!result.FolderName" />

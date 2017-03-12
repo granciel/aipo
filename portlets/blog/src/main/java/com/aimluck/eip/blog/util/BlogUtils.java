@@ -130,12 +130,31 @@ public class BlogUtils {
   public static final String BLOG_PORTLET_NAME = "Blog";
 
   /**
+   * エントリーオブジェクトのIDを取得します。 <BR>
+   *
+   * @param rundata
+   * @param context
+   * @return
+   * @throws ALDBErrorException
+   */
+  public static Integer getEipTBlogEntryId(RunData rundata, Context context) {
+    String entryid =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (entryid == null || (id = Integer.valueOf(entryid)) == null) {
+      // Todo IDが空の場合
+      logger.debug("[Blog Entry] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
+  /**
    * エントリーオブジェクトモデルを取得します。 <BR>
    *
    * @param rundata
    * @param context
-   * @param isJoin
-   *          テーマテーブルをJOINするかどうか
    * @return
    * @throws ALDBErrorException
    */

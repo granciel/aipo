@@ -18,6 +18,7 @@
  */
 package com.aimluck.eip.schedule;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -123,6 +124,11 @@ public class ScheduleDetailResultData extends ScheduleResultData {
   @Override
   public ALStringField getPlace() {
     return place;
+  }
+
+  // URLエンコード
+  public String getPlaceEncode() {
+    return URLEncoder.encode(place.toString());
   }
 
   public String getPlaceHtml() {

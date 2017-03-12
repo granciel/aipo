@@ -54,6 +54,7 @@ import com.aimluck.eip.common.ALEipPost;
 import com.aimluck.eip.common.ALEipUser;
 import com.aimluck.eip.common.ALPageNotFoundException;
 import com.aimluck.eip.fileupload.beans.FileuploadBean;
+import com.aimluck.eip.fileupload.util.FileuploadUtils;
 import com.aimluck.eip.modules.actions.common.ALAction;
 import com.aimluck.eip.orm.Database;
 import com.aimluck.eip.orm.query.SelectQuery;
@@ -1264,5 +1265,56 @@ public class ProjectTaskFormData extends ALAbstractFormData {
 
   public boolean isProjectExists() {
     return allProject != null && allProject.size() > 0;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      try {
+        // オブジェクトモデルを取得
+        Integer taskId = ProjectUtils.getEipTProjectTaskId(rundata, context);
+        if (taskId == null) {
+          return false;
+        }
+        // サーバーに残すファイルのID
+        List<Integer> formIdList =
+          pfile.getRequestedHasFileIdList(fileuploadList);
+        // 現在選択しているエントリが持っているファイル
+        List<EipTProjectTaskFile> files =
+          pfile.getSelectQueryForFiles(
+            EipTProjectTask.TASK_ID_PK_COLUMN,
+            taskId).fetchList();
+        List<Integer> existFileIdList = new ArrayList<Integer>();
+        if (files != null) {
+          for (EipTProjectTaskFile file : files) {
+            existFileIdList.add(file.getFileId());
+          }
+        }
+
+        return FileuploadUtils.updateValidate(
+          msgList,
+          formIdList,
+          existFileIdList,
+          fileuploadList,
+          hasAttachmentInsertAuthority(),
+          hasAttachmentDeleteAuthority());
+      } catch (Exception ex) {
+        logger.error("ProjectTaskFormData.", ex);
+        return false;
+      }
+    }
+    return true;
   }
 }

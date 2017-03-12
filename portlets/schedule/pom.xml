@@ -77,6 +77,11 @@
   <dependencies>
     <dependency>
       <groupId>com.aimluck.eip</groupId>
+      <artifactId>aipo-portlet-account</artifactId>
+      <version>${aipo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.aimluck.eip</groupId>
       <artifactId>aipo-portlet-facilities</artifactId>
       <version>${aipo.version}</version>
     </dependency>

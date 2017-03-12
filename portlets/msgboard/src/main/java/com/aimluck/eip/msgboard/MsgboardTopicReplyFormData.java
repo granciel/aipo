@@ -539,6 +539,9 @@ public class MsgboardTopicReplyFormData extends ALAbstractFormData {
         context,
         ALAccessControlConstants.VALUE_ACL_INSERT);
 
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
+
       action.setMode(ALEipConstants.MODE_INSERT);
       List<String> msgList = new ArrayList<String>();
       setValidator();
@@ -548,7 +551,9 @@ public class MsgboardTopicReplyFormData extends ALAbstractFormData {
           .getl10n("COMMON_FULL_DISK_DELETE_DETA_OR_CHANGE_PLAN"));
       } else {
         res =
-          (setFormData(rundata, context, msgList) && validate(msgList) && insertFormData(
+          (setFormData(rundata, context, msgList)
+            && validate(msgList)
+            && extValidate(rundata, context, msgList) && insertFormData(
             rundata,
             context,
             msgList));
@@ -696,10 +701,25 @@ public class MsgboardTopicReplyFormData extends ALAbstractFormData {
 
   /**
    * 他ユーザのトピックを削除する権限があるかどうかを返します。
-   * 
+   *
    * @return
    */
   public boolean hasAclDeleteTopicOthers() {
     return hasAclDeleteTopicOthers;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    return FileuploadUtils.insertValidate(
+      msgList,
+      fileuploadList,
+      hasAttachmentInsertAuthority());
   }
 }

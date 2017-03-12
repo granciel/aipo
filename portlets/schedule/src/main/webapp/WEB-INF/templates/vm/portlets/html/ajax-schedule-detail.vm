@@ -81,8 +81,16 @@ $!{result.Detail.Date}
 #end
 #* 共有カテゴリ連携（ここまで）  *#
 
+#*以下詳細画面の場所表示*#
 #ALtdcaption($l10n.SCHEDULE_PLACE)
+#if($result.enabledMapsFlag())
+#ALtditemheader()
+<a href="https://maps.apple.com/maps?q=$!{result.Detail.PlaceEncode} " target="_blank">$!{result.Detail.PlaceHtml} </a>
+#ALtditemfooter()
+#else
 #ALtditem($!{result.Detail.PlaceHtml})
+#end
+
 #ALtdcaption($l10n.SCHEDULE_NOTE)
 #ALtditem($!{result.Detail.Note})
 #ALtdcaption($l10n.SCHEDULE_PUBLIC)

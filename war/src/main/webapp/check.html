@@ -95,6 +95,9 @@ function join() {
            if("activity" == type) {
                gadgets.rpc.call(null, "requestCheckActivity");
            }
+           if("timeline" == type) {
+        	   gadgets.rpc.call(null, "requestCheckTimeline", null, data);
+           }
            if(typeof type != "undefined"){
                join();
            }

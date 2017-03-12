@@ -288,30 +288,33 @@ public class ProjectSelectData extends
     query1.setQualifier(exp1);
     data.setMemberList(ALEipUtils.getUsersFromSelectQuery(query1));
 
-    // ファイルリスト
-    List<EipTProjectFile> list =
-      ProjectUtils
-        .getSelectQueryForFiles(record.getProjectId().intValue())
-        .fetchList();
-    if (list != null && list.size() > 0) {
-      List<FileuploadBean> attachmentFileList = new ArrayList<FileuploadBean>();
-      FileuploadBean filebean = null;
-      for (EipTProjectFile file : list) {
-        String realname = file.getFileName();
-        javax.activation.DataHandler hData =
-          new javax.activation.DataHandler(new javax.activation.FileDataSource(
-            realname));
+    if (hasAttachmentAuthority()) {
+      // ファイルリスト
+      List<EipTProjectFile> list =
+        ProjectUtils
+          .getSelectQueryForFiles(record.getProjectId().intValue())
+          .fetchList();
+      if (list != null && list.size() > 0) {
+        List<FileuploadBean> attachmentFileList =
+          new ArrayList<FileuploadBean>();
+        FileuploadBean filebean = null;
+        for (EipTProjectFile file : list) {
+          String realname = file.getFileName();
+          javax.activation.DataHandler hData =
+            new javax.activation.DataHandler(
+              new javax.activation.FileDataSource(realname));
 
-        filebean = new FileuploadBean();
-        filebean.setFileId(file.getFileId().intValue());
-        filebean.setFileName(realname);
-        if (hData != null) {
-          filebean.setContentType(hData.getContentType());
+          filebean = new FileuploadBean();
+          filebean.setFileId(file.getFileId().intValue());
+          filebean.setFileName(realname);
+          if (hData != null) {
+            filebean.setContentType(hData.getContentType());
+          }
+          filebean.setIsImage(FileuploadUtils.isImage(realname));
+          attachmentFileList.add(filebean);
         }
-        filebean.setIsImage(FileuploadUtils.isImage(realname));
-        attachmentFileList.add(filebean);
+        data.setAttachmentFileList(attachmentFileList);
       }
-      data.setAttachmentFileList(attachmentFileList);
     }
 
     data.setCreateDate(record.getCreateDate());// 作成日

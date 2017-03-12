@@ -142,6 +142,27 @@ public class MsgboardUtils {
   private static final String RESET_FLAG = "reset_params";
 
   /**
+   * トピックオブジェクトモデルのIDを取得します。 <BR>
+   *
+   * @param rundata
+   * @param context
+   * @return
+   */
+  public static Integer getEipTMsgboardParentTopicId(RunData rundata,
+      Context context) {
+    String topicid =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (topicid == null || (id = Integer.valueOf(topicid)) == null) {
+      // Todo IDが空の場合
+      logger.debug("[MsgboardTopic] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
+  /**
    * トピックオブジェクトモデルを取得します。 <BR>
    *
    * @param rundata

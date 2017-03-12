@@ -58,7 +58,14 @@ public abstract class ALAbstractFormData implements ALData {
   /** アクセス権限の有無 */
   protected boolean hasAuthority;
 
+  /** アクセス元ブラウザによるファイルアップロード可否 */
   protected boolean isFileUploadable;
+
+  /** 添付ファイル追加へのアクセス権限の有無 */
+  private boolean hasAttachmentInsertAuthority;
+
+  /** 添付ファイル削除へのアクセス権限の有無 */
+  private boolean hasAttachmentDeleteAuthority;
 
   /**
    * 初期化処理を行います。 <br />
@@ -89,7 +96,7 @@ public abstract class ALAbstractFormData implements ALData {
         }
       }
     }
-
+    
     isFileUploadable = ALEipUtils.isFileUploadable(rundata);
   }
 
@@ -132,6 +139,9 @@ public abstract class ALAbstractFormData implements ALData {
         aclType = ALAccessControlConstants.VALUE_ACL_UPDATE;
       }
       doCheckAclPermission(rundata, context, aclType);
+
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
 
       action.setMode(isedit
         ? ALEipConstants.MODE_EDIT_FORM
@@ -192,6 +202,9 @@ public abstract class ALAbstractFormData implements ALData {
         context,
         ALAccessControlConstants.VALUE_ACL_INSERT);
 
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
+
       action.setMode(ALEipConstants.MODE_INSERT);
       mode = action.getMode();
       rundata.getParameters().add(
@@ -205,7 +218,9 @@ public abstract class ALAbstractFormData implements ALData {
           .getl10n("COMMON_FULL_DISK_DELETE_DETA_OR_CHANGE_PLAN"));
       } else {
         res =
-          (setFormData(rundata, context, msgList) && validate(msgList) && insertFormData(
+          (setFormData(rundata, context, msgList)
+            && validate(msgList)
+            && extValidate(rundata, context, msgList) && insertFormData(
             rundata,
             context,
             msgList));
@@ -260,6 +275,9 @@ public abstract class ALAbstractFormData implements ALData {
         context,
         ALAccessControlConstants.VALUE_ACL_UPDATE);
 
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
+
       action.setMode(ALEipConstants.MODE_UPDATE);
       mode = action.getMode();
       rundata.getParameters().add(
@@ -273,7 +291,9 @@ public abstract class ALAbstractFormData implements ALData {
           .getl10n("COMMON_FULL_DISK_DELETE_DETA_OR_CHANGE_PLAN"));
       } else {
         res =
-          (setFormData(rundata, context, msgList) && validate(msgList) && updateFormData(
+          (setFormData(rundata, context, msgList)
+            && validate(msgList)
+            && extValidate(rundata, context, msgList) && updateFormData(
             rundata,
             context,
             msgList));
@@ -328,6 +348,9 @@ public abstract class ALAbstractFormData implements ALData {
         context,
         ALAccessControlConstants.VALUE_ACL_DELETE);
 
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
+
       action.setMode(ALEipConstants.MODE_DELETE);
       mode = action.getMode();
       rundata.getParameters().add(
@@ -335,7 +358,9 @@ public abstract class ALAbstractFormData implements ALData {
         ALEipConstants.MODE_DELETE);
 
       List<String> msgList = new ArrayList<String>();
-      boolean res = deleteFormData(rundata, context, msgList);
+      boolean res =
+        extValidate(rundata, context, msgList)
+          && deleteFormData(rundata, context, msgList);
       action.setResultData(this);
       if (!msgList.isEmpty()) {
         action.addErrorMessages(msgList);
@@ -599,6 +624,63 @@ public abstract class ALAbstractFormData implements ALData {
   }
 
   /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected boolean doCheckAttachmentAclPermission(RunData rundata,
+      Context context, int defineAclType) {
+
+    if (defineAclType == 0) {
+      return true;
+    }
+
+    // アクセス権限のチェックをしない場合
+    boolean checkAttachmentAuthority = isCheckAttachmentAuthority();
+    if (!checkAttachmentAuthority) {
+      return true;
+    }
+
+    ALAccessControlFactoryService aclservice =
+      (ALAccessControlFactoryService) ((TurbineServices) TurbineServices
+        .getInstance()).getService(ALAccessControlFactoryService.SERVICE_NAME);
+    ALAccessControlHandler aclhandler = aclservice.getAccessControlHandler();
+
+    return aclhandler.hasAuthority(
+      ALEipUtils.getUserId(rundata),
+      ALAccessControlConstants.POERTLET_FEATURE_ATTACHMENT,
+      defineAclType);
+  }
+
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected void doCheckAttachmentInsertAclPermission(RunData rundata,
+      Context context) { // ファイル追加権限の有無
+    hasAttachmentInsertAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_INSERT);
+  }
+
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected void doCheckAttachmentDeleteAclPermission(RunData rundata,
+      Context context) { // ファイル削除権限の有無
+    hasAttachmentDeleteAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_DELETE);
+  }
+
+  /**
    * アクセス権限用メソッド。<br />
    * アクセス権限の有無を返します。
    *
@@ -636,6 +718,35 @@ public abstract class ALAbstractFormData implements ALData {
 
   public boolean isFileUploadable() {
     return isFileUploadable;
+  }
+
+  /**
+   * ファイルアップロードアクセス権限チェック用メソッド。<br />
+   * ファイルアップのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  public boolean isCheckAttachmentAuthority() {
+    return true;
+  }
+
+  public boolean hasAttachmentInsertAuthority() {
+    return hasAttachmentInsertAuthority;
+  }
+
+  public boolean hasAttachmentDeleteAuthority() {
+    return hasAttachmentDeleteAuthority;
+  }
+
+  /**
+   * フォームに入力された添データの妥当性検証を行う抽象メソッドです。
+   *
+   * @param msgList
+   *          エラーメッセージのリスト
+   */
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    return true;
   }
 
 }

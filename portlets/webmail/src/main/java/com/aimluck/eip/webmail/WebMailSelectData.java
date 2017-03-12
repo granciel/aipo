@@ -459,7 +459,9 @@ public class WebMailSelectData extends
         false)));
       rd.setDate(date);
       rd.setBody(msg.getBodyText());
-      rd.setAttachmentFileNames(msg.getAttachmentFileNameArray());
+      if (hasAttachmentAuthority()) {
+        rd.setAttachmentFileNames(msg.getAttachmentFileNameArray());
+      }
     } catch (Exception e) {
       logger.error("webmail", e);
     }

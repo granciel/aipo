@@ -25,13 +25,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.apache.jetspeed.services.logging.JetspeedLogFactoryService;
 import org.apache.jetspeed.services.logging.JetspeedLogger;
-import org.apache.turbine.services.TurbineServices;
 import org.apache.turbine.util.RunData;
 import org.apache.velocity.context.Context;
 
@@ -52,9 +53,8 @@ import com.aimluck.eip.orm.Database;
 import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.services.eventlog.ALEventlogConstants;
 import com.aimluck.eip.services.eventlog.ALEventlogFactoryService;
+import com.aimluck.eip.services.push.ALPushService;
 import com.aimluck.eip.services.storage.ALStorageService;
-import com.aimluck.eip.services.timeline.ALTimelineFactoryService;
-import com.aimluck.eip.services.timeline.ALTimelineHandler;
 import com.aimluck.eip.timeline.util.TimelineUtils;
 import com.aimluck.eip.util.ALEipUtils;
 import com.aimluck.eip.util.ALLocalizationUtils;
@@ -383,17 +383,22 @@ public class TimelineFormData extends ALAbstractFormData {
         }
       }
 
-      ALTimelineFactoryService tlservice =
-        (ALTimelineFactoryService) ((TurbineServices) TurbineServices
-          .getInstance()).getService(ALTimelineFactoryService.SERVICE_NAME);
-      ALTimelineHandler timelinehandler = tlservice.getTimelineHandler();
-      timelinehandler.pushToken(rundata, String.valueOf(uid));
-
       // イベントログに保存
       ALEventlogFactoryService.getInstance().getEventlogHandler().log(
         topic.getTimelineId(),
         ALEventlogConstants.PORTLET_TYPE_TIMELINE,
         TimelineUtils.compressString(note.getValue()));
+
+      // プッシュ通知の処理
+      Map<String, String> params = new HashMap<String, String>();
+      List<String> recipients = new ArrayList<String>();
+      recipients.add(Database.getDomainName());
+      params.put("timelineId", String.valueOf(topic.getTimelineId()));
+      params.put("senderName", String.valueOf(ALEipUtils
+        .getALEipUser(uid)
+        .getName()
+        .getValue()));
+      ALPushService.pushAsync("timeline", params, recipients);
 
     } catch (RuntimeException ex) {
       // RuntimeException
@@ -639,5 +644,23 @@ public class TimelineFormData extends ALAbstractFormData {
     list.add("tlClipBody");
     ALEipUtils.removeTemp(rundata, context, list);
 
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    }
+    return true;
   }
 }

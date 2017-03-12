@@ -313,6 +313,26 @@ public class WikiUtils {
     ALEipUtils.setTemp(rundata, context, TARGET_KEYWORD, "");
   }
 
+  /**
+   * エントリーオブジェクトのIDを取得します。 <BR>
+   *
+   * @param rundata
+   * @param context
+   * @return
+   */
+  public static Integer getEipTWikiId(RunData rundata, Context context) {
+    String wikiId =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (wikiId == null || (id = Integer.valueOf(wikiId)) == null) {
+      // Todo IDが空の場合
+      logger.debug("[WikiUtils] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
   public static EipTWiki getEipTWiki(RunData rundata, Context context)
       throws ALPageNotFoundException, ALDBErrorException {
     String id = ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);

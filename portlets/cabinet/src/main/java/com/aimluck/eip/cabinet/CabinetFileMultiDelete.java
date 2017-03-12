@@ -41,7 +41,7 @@ import com.aimluck.eip.util.ALLocalizationUtils;
 
 /**
  * 共有フォルダのファイルの複数削除を行うためのクラスです。 <BR>
- * 
+ *
  */
 public class CabinetFileMultiDelete extends ALAbstractCheckList {
 
@@ -50,7 +50,7 @@ public class CabinetFileMultiDelete extends ALAbstractCheckList {
     .getLogger(CabinetFileMultiDelete.class.getName());
 
   /**
-   * 
+   *
    * @param rundata
    * @param context
    * @param values
@@ -61,6 +61,16 @@ public class CabinetFileMultiDelete extends ALAbstractCheckList {
   protected boolean action(RunData rundata, Context context,
       List<String> values, List<String> msgList) {
     try {
+      boolean hasAttachmentDeleteAuthority =
+        doCheckAttachmentAclPermission(
+          rundata,
+          context,
+          ALAccessControlConstants.VALUE_ACL_DELETE);
+      if (!hasAttachmentDeleteAuthority) {
+        msgList
+          .add(ALAccessControlConstants.DEF_ATTACHMENT_PERMISSION_ERROR_STR);
+        return false;
+      }
 
       SelectQuery<EipTCabinetFile> query =
         Database.query(EipTCabinetFile.class);
@@ -130,7 +140,7 @@ public class CabinetFileMultiDelete extends ALAbstractCheckList {
   /**
    * アクセス権限チェック用メソッド。<br />
    * アクセス権限を返します。
-   * 
+   *
    * @return
    */
   @Override
@@ -141,7 +151,7 @@ public class CabinetFileMultiDelete extends ALAbstractCheckList {
   /**
    * アクセス権限チェック用メソッド。<br />
    * アクセス権限の機能名を返します。
-   * 
+   *
    * @return
    */
   @Override

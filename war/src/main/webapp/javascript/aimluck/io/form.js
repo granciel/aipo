@@ -1129,20 +1129,21 @@ aimluck.io.createMemberLists = function (ulId, params) {
   } else {
     clickEvent = params["clickEvent"];
   }
+  var param_keyword = "";
   if (typeof params["keyword"] == "undefined") {
   } else {
 	  keyword = params["keyword"];
 	    var target_keyword = dojo.byId(keyword);
 	    if (target_keyword) {
-	    	var search = encodeURIComponent(target_keyword.value);
-	      url = url + "&keyword=" + search;
+	    	param_keyword = target_keyword.value;
 	    }
   }
 
-  dojo.xhrGet({
+  dojo.xhrPost({
     url: url,
     timeout: 10000,
     encoding: "utf-8",
+    content: {"keyword":param_keyword},
     handleAs: "json-comment-filtered",
     headers: {
       X_REQUESTED_WITH: "XMLHttpRequest"

@@ -18,52 +18,51 @@
  */
 package com.aimluck.eip.modules.screens;
 
-import java.util.Date;
-
 import org.apache.jetspeed.services.logging.JetspeedLogFactoryService;
 import org.apache.jetspeed.services.logging.JetspeedLogger;
 import org.apache.turbine.util.RunData;
+import org.apache.velocity.context.Context;
 
-import com.aimluck.eip.cayenne.om.portlet.EipTTimelineUrl;
-import com.aimluck.eip.timeline.util.TimelineUtils;
+import com.aimluck.eip.schedule.ScheduleAdminSelectData;
+import com.aimluck.eip.util.ALEipUtils;
 
 /**
- * 掲示板トピックの添付ファイルのサムネイルを処理するクラスです。
+ *
  */
-public class TimelineUrlThumbnailScreen extends FileuploadThumbnailScreen {
+public class ScheduleAdminFormScreen extends ALVelocityScreen {
 
   /** logger */
   private static final JetspeedLogger logger = JetspeedLogFactoryService
-    .getLogger(TimelineFileThumbnailScreen.class.getName());
+    .getLogger(ScheduleAdminFormScreen.class.getName());
 
   /**
    *
    * @param rundata
+   * @param context
    * @throws Exception
    */
   @Override
-  protected void doOutput(RunData rundata) throws Exception {
+  protected void doOutput(RunData rundata, Context context) throws Exception {
     try {
-      EipTTimelineUrl file = TimelineUtils.getEipTTimelineUrl(rundata);
+      ScheduleAdminSelectData detailData = new ScheduleAdminSelectData();
+      detailData.initField();
+      detailData.doViewDetail(this, rundata, context);
 
-      super.setFile(file.getThumbnail());
-      super.setFileName(file.getTitle());
-      // EipTTimelineUrl に更新時間のカラムがないため、現在時間で代替
-      super.setLastModified(new Date());
-      super.doOutput(rundata);
-    } catch (Exception e) {
-      logger.error("TimelineUrlThumbnailScreen.doOutput", e);
+      String layout_template = "portlets/html/ajax-schedule-admin-form.vm";
+
+      setTemplate(rundata, context, layout_template);
+    } catch (Exception ex) {
+      logger.error("[ScheduleAdminFormScreen] Exception.", ex);
+      ALEipUtils.redirectDBError(rundata);
     }
   }
 
   /**
-   * ファイルアクセス権限チェック用メソッド。<br />
-   * ファイルのアクセス権限をチェックするかどうかを判定します。
-   *
    * @return
    */
   @Override
-  public boolean isCheckAttachmentAuthority() {
-    return false;
+  protected String getPortletName() {
+    // アプリ管理
+    return "GadgetsAdmin";
   }
 }

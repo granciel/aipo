@@ -70,7 +70,7 @@
 
 					<div class="tlInputAttachment" id="messageInputAttachment" style="display: none">
 						<p class="tlInputAttachmentTitle">$l10n.MESSAGE_ATTACHMENT</p>
-						<ul id="attachments_global-$messagePortletId" class="attachments #if(!$!utils.isFileUploadable($data))mb_hide#end">
+						<ul id="attachments_global-$messagePortletId" class="attachments #if(!$!utils.isFileUploadable($data) || !$!utils.hasAttachmentInsertAuthority($data))hide#end">
 						</ul>
 					</div>
 
@@ -79,7 +79,7 @@
 							<i class="indicator" id="indicator-dlg-global-$messagePortletId" style="display:none"></i>
 							<input type="submit" class="auiButtonAction" value="$l10n.MESSAGE_MESSAGE_SEND" onclick="aipo.message.insertTransactionId('');aimluck.io.setHiddenValue(this);">
 						</div>
-						<div class="floatLeft #if(!$!utils.isFileUploadable($data))mb_hide#end">
+						<div class="floatLeft #if(!$!utils.isFileUploadable($data) || !$!utils.hasAttachmentInsertAuthority($data))hide#end">
 							<iframe name="if_fileupload_$messagePortletId" id="if_fileupload_$messagePortletId" allowtransparency="true" class="auiInputFileFrame" src="$!jslink.getPortletById("global-${messagePortletId}").addQueryData('template','MessageFileuploadFormScreen').addQueryData('mode','miniform')" frameborder="0" scrolling="no" ></iframe>
 						</div>
 					</div>

@@ -50,6 +50,7 @@ import com.aimluck.eip.orm.query.SQLTemplate;
 import com.aimluck.eip.project.util.ProjectFile;
 import com.aimluck.eip.project.util.ProjectFormUtils;
 import com.aimluck.eip.project.util.ProjectUtils;
+import com.aimluck.eip.services.accessctl.ALAccessControlConstants;
 import com.aimluck.eip.util.ALEipUtils;
 
 /**
@@ -131,6 +132,9 @@ public class ProjectTaskSelectData extends
 
   private boolean isFileUploadable;
 
+  /** 添付ファイル追加へのアクセス権限の有無 */
+  private boolean hasAttachmentInsertAuthority;
+
   /**
    * 初期設定
    *
@@ -144,6 +148,8 @@ public class ProjectTaskSelectData extends
   @Override
   public void init(ALAction action, RunData rundata, Context context)
       throws ALPageNotFoundException, ALDBErrorException {
+
+    doCheckAttachmentInsertAclPermission(rundata, context);
 
     // 検索条件・ソートリセット（プロジェクト選択時）
     String resetCondition = rundata.getParameters().get("reset_condition");
@@ -187,6 +193,7 @@ public class ProjectTaskSelectData extends
     loginUserId = ALEipUtils.getUserId(rundata);
 
     isFileUploadable = ALEipUtils.isFileUploadable(rundata);
+
   }
 
   /**
@@ -713,14 +720,18 @@ public class ProjectTaskSelectData extends
   protected Object getResultDataDetail(EipTProjectTask record) {
     ProjectTaskResultData data = ProjectUtils.getProjectTaskResultData(record);
     int taskId = (int) data.getTaskId().getValue();
-    // ファイルリスト
-    List<EipTProjectTaskFile> list =
-      pfile
-        .getSelectQueryForFiles(EipTProjectTask.TASK_ID_PK_COLUMN, taskId)
-        .fetchList();
-    data.setAttachmentFiles(pfile.getFileList(list));
+    if (hasAttachmentAuthority()) {
+      // ファイルリスト
+      List<EipTProjectTaskFile> list =
+        pfile
+          .getSelectQueryForFiles(EipTProjectTask.TASK_ID_PK_COLUMN, taskId)
+          .fetchList();
+      data.setAttachmentFiles(pfile.getFileList(list));
+    }
     // コメントリスト
-    data.setCommentList(ProjectUtils.getProjectTaskCommentList("" + taskId));
+    data.setCommentList(ProjectUtils.getProjectTaskCommentList(
+      "" + taskId,
+      hasAttachmentAuthority()));
     // パンくずリスト
     data.setTopicPath(ProjectUtils.getTaskTopicPath(record.getProjectId()));
     // ログインユーザーID
@@ -1181,4 +1192,21 @@ public class ProjectTaskSelectData extends
     return isFileUploadable;
   }
 
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected void doCheckAttachmentInsertAclPermission(RunData rundata,
+      Context context) { // ファイル追加権限の有無
+    hasAttachmentInsertAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_INSERT);
+  }
+
+  public boolean hasAttachmentInsertAuthority() {
+    return hasAttachmentInsertAuthority;
+  }
 }

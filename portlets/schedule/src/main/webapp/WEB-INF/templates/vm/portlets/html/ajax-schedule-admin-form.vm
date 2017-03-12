@@ -18,33 +18,33 @@
  *#
 ## ---------------------------------------------------------------------------
 #set ($indicator_id = "indicator-dlg-")
+
+#set ($action_str = $l10n.GADGETS_UPDATE)
+#set ($subtitle = $l10n.GADGETS_APP_EDIT)
+#set ($event_submit = "eventSubmit_doScheduleAdmin_update")
 ## ---------------------------------------------------------------------------
-#ALdialogheader("$l10n.GADGETS_APP_DETAIL")
+
+#ALdialogheader($subtitle)
 #ALajaxIndicator("$indicator_id" "$!portlet.ID" "")
-#ALajaxdetailformheader($l10n.GADGETS_APP)
+
+#ALajaxscreenformheader("scheduleAdminForm" $jslink $portlet "ScheduleAdminJSONScreen" "aimluck.io.submit(this,'$indicator_id','$!portlet.ID',aipo.schedule.onReceiveMessage)")
+<input type="hidden" name="mode" value="update" />
+
 #ALtableheaderWide()
 
-#ALtdcaption($l10n.GADGETS_TITLE)
+#ALtdcaption($l10n.SCHEDULE_UPDATE_MAPS)
+
 #ALtditemheader()
-$!result.Detail.Title
+  <p><input class="mt0" name="enabled_maps" type="radio" value="F" id="enabled_maps_off" #if ($!{result.enabledMapsFlag.toString()}  == "F")checked="checked"#end>
+  <label for="enabled_maps_off">&nbsp;$l10n.SCHEDULE_DO_INVALID</label></p>
+  <p><input class="mt0" name="enabled_maps" type="radio" value="T" id="enabled_maps_on" #if ($!{result.enabledMapsFlag.toString()}  == "T")checked="checked"#end>
+  <label for="enabled_maps_on">&nbsp;$l10n.SCHEDULE_DO_VALID</label></p>
 #ALtditemfooter()
 
-#ALtdcaption($l10n.GADGETS_APP_DESCRIPTION)
-#ALtditem($!result.Detail.Description)
-
-#ALtdcaption($l10n.GADGETS_SCHEDULE_MAP_URL)
-#set($map_flg = $!result.enabledMapsFlag.toString())
-#if($map_flg == "T")
-#ALtdcell($l10n.SCHEDULE_VALID)
-#else
-#ALtdcell($l10n.SCHEDULE_INVALID)
-#end
 #ALtablefooter()
 
 #ALbuttonheader()
-#ALajaxbuttonEdit("$!jslink.getPortletById($!portlet.ID).addQueryData('template','ScheduleAdminFormScreen')")
-#ALajaxbuttonClose()
+#ALsubmit($event_submit $action_str)#ALajaxbuttonClose()
 #ALbuttonfooter()
-
 #ALformfooter()
 #ALdialogfooter()

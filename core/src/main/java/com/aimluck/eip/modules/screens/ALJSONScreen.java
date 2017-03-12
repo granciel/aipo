@@ -41,7 +41,7 @@ import com.aimluck.eip.util.ALEipUtils;
 
 /**
  * ブラウザにJSONデータを返すクラスです。 <br />
- * 
+ *
  */
 public abstract class ALJSONScreen extends RawScreen implements ALAction {
 
@@ -69,7 +69,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   private List<String> errmsgList;
 
   /**
-   * 
+   *
    * @param rundata
    * @throws Exception
    */
@@ -87,6 +87,13 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
     }
 
     try {
+      /*
+       * String portletName = getPortletName(); if (portletName != null &&
+       * !"".equals(portletName) &&
+       * (!ALPortalApplicationService.isActive(portletName) || !CustomizeUtils
+       * .isAdminUserView(portletName, rundata))) { throw new
+       * ALPermissionException(); }
+       */
 
       ALEipUtils.setupContext(rundata, context);
 
@@ -107,8 +114,13 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
 
   }
 
+  protected String getPortletName() {
+    // getPortlet未定義のJSONScreen用
+    return null;
+  }
+
   /**
-   * 
+   *
    * @param rundata
    * @return
    */
@@ -121,7 +133,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
       throws Exception;
 
   /**
-   * 
+   *
    * @param obj
    */
   @Override
@@ -130,7 +142,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param obj
    */
   @Override
@@ -142,7 +154,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param objList
    */
   @Override
@@ -151,7 +163,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param msg
    */
   @Override
@@ -163,7 +175,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param msg
    */
   @Override
@@ -175,7 +187,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param msgs
    */
   @Override
@@ -184,7 +196,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param mode
    */
   @Override
@@ -193,7 +205,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @return
    */
   @Override
@@ -202,7 +214,7 @@ public abstract class ALJSONScreen extends RawScreen implements ALAction {
   }
 
   /**
-   * 
+   *
    * @param context
    */
   @Override

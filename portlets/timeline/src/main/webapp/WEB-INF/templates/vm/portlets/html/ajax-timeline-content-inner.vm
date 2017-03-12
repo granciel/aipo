@@ -29,7 +29,7 @@
 		#if(${record.hasPhoto()})
 			<img src="$!utils.escapeXML($jslink.getTemplate("FileuploadFacePhotoScreen").addQueryData("uid", ${record.OwnerId}).addQueryData("t", ${record.PhotoModified}))" alt="$!{record.OwnerName}" width="50" height="50" />
 		#elseif($!result.isMatch(2, $!{record.OwnerId.Value}))
-			<img src="themes/default/images/guide_icon.png" alt="$l10n.TIMELINE_GUIDE_USER" width="50" height="50" />
+			<img src="themes/default/images/common/icon_aipo100.png" alt="${alias}" width="50" height="50" />
 		#else
 			<img src="themes/default/images/common/icon_user100.png" alt="$!{record.OwnerName}" width="50" height="50" />
 		#end
@@ -41,7 +41,7 @@
 	<div class="messageContents">
 		<div class="name">
 			#if($!result.isMatch(2, $!{record.OwnerId.Value}))
-			$l10n.TIMELINE_GUIDE_USER
+			${alias}　
 			#else
 			<a href="javascript: void(0)" onclick="aipo.message.popupProfile(${record.OwnerId},arguments[0])">$!record.OwnerName</a>
 			#end

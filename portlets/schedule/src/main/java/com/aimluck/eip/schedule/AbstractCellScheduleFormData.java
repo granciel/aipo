@@ -149,6 +149,9 @@ public abstract class AbstractCellScheduleFormData extends ALAbstractFormData {
         isedit = false;
       }
       doCheckAclPermission(rundata, context, aclType);
+
+      doCheckAttachmentInsertAclPermission(rundata, context);
+      doCheckAttachmentDeleteAclPermission(rundata, context);
       action.setMode(isedit
         ? ALEipConstants.MODE_EDIT_FORM
         : ALEipConstants.MODE_NEW_FORM);

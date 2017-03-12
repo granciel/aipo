@@ -29,7 +29,11 @@
 #ALtditem("$!result.Detail.FileTitleHtml")
 #ALtdcaption("$l10n.CABINET_FILE_NAME")
 #ALtditemheader()
+#if($result.hasAttachmentAuthority())
 <a #if("$!{client}"=="IPHONE" || $!result.Detail.AcceptInline)target="_blank"#end href="$!jslink.getTemplate("CabinetFileRawScreen").addPathInfo("entityid",${result.Detail.FileId}).addPathInfo("f",${result.Detail.URLEncodedFileName})">$!result.Detail.WbrFileName</a>
+#else
+$!result.Detail.WbrFileName
+#end
 #ALtditemfooter()
 #ALtdcaption("$l10n.CABINET_POSISHION")
 #ALtditem("$!result.Detail.PositionHtml")

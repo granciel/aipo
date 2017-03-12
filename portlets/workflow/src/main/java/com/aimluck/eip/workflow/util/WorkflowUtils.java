@@ -332,6 +332,27 @@ public class WorkflowUtils {
   }
 
   /**
+   * Request オブジェクトモデルのIDを取得します。 <BR>
+   *
+   * @param rundata
+   * @param context
+   * @return
+   */
+  public static Integer getEipTWorkflowRequestForOwnerId(RunData rundata,
+      Context context) {
+    String requestid =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (requestid == null || (id = Integer.valueOf(requestid)) == null) {
+      // Todo IDが空の場合
+      logger.debug("[WorkflowUtils] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
+  /**
    * Request オブジェクトモデルを取得します。 <BR>
    * 
    * @param rundata
@@ -667,11 +688,23 @@ public class WorkflowUtils {
 
   /**
    * 依頼の詳細情報を取得する。
-   * 
+   *
    * @param rundata
    * @param context
    */
+  @Deprecated
   public static Object getResultDataDetail(Object obj, ALEipUser login_user) {
+    return getResultDataDetail(obj, login_user, false);
+  }
+
+  /**
+   * 依頼の詳細情報を取得する。
+   *
+   * @param rundata
+   * @param context
+   */
+  public static Object getResultDataDetail(Object obj, ALEipUser login_user,
+      boolean hasAttachmentAuthority) {
     try {
       EipTWorkflowRequest record = (EipTWorkflowRequest) obj;
       WorkflowDetailResultData rd = new WorkflowDetailResultData();
@@ -767,29 +800,31 @@ public class WorkflowUtils {
         }
       }
 
-      // ファイルリスト
-      List<EipTWorkflowFile> list =
-        getSelectQueryForFiles(record.getRequestId().intValue()).fetchList();
-      if (list != null && list.size() > 0) {
-        List<FileuploadBean> attachmentFileList =
-          new ArrayList<FileuploadBean>();
-        FileuploadBean filebean = null;
-        for (EipTWorkflowFile file : list) {
-          String realname = file.getFileName();
-          javax.activation.DataHandler hData =
-            new javax.activation.DataHandler(
-              new javax.activation.FileDataSource(realname));
+      if (hasAttachmentAuthority) {
+        // ファイルリスト
+        List<EipTWorkflowFile> list =
+          getSelectQueryForFiles(record.getRequestId().intValue()).fetchList();
+        if (list != null && list.size() > 0) {
+          List<FileuploadBean> attachmentFileList =
+            new ArrayList<FileuploadBean>();
+          FileuploadBean filebean = null;
+          for (EipTWorkflowFile file : list) {
+            String realname = file.getFileName();
+            javax.activation.DataHandler hData =
+              new javax.activation.DataHandler(
+                new javax.activation.FileDataSource(realname));
 
-          filebean = new FileuploadBean();
-          filebean.setFileId(file.getFileId().intValue());
-          filebean.setFileName(realname);
-          if (hData != null) {
-            filebean.setContentType(hData.getContentType());
+            filebean = new FileuploadBean();
+            filebean.setFileId(file.getFileId().intValue());
+            filebean.setFileName(realname);
+            if (hData != null) {
+              filebean.setContentType(hData.getContentType());
+            }
+            filebean.setIsImage(FileuploadUtils.isImage(realname));
+            attachmentFileList.add(filebean);
           }
-          filebean.setIsImage(FileuploadUtils.isImage(realname));
-          attachmentFileList.add(filebean);
+          rd.setAttachmentFiles(attachmentFileList);
         }
-        rd.setAttachmentFiles(attachmentFileList);
       }
 
       rd.setCreateDate(WorkflowUtils.translateDate(

@@ -373,6 +373,7 @@ public class BlogEntryFormData extends ALAbstractFormData {
       List<String> msgList) {
     boolean res = true;
     try {
+
       if (is_new_thema) {
         // テーマの登録処理
         res = blogthema.insertFormData(rundata, context, msgList);
@@ -782,5 +783,63 @@ public class BlogEntryFormData extends ALAbstractFormData {
 
   public void setThemaId(long i) {
     thema_id.setValue(i);
+  }
+
+  /**
+   * ファイルアップロードアクセス権限チェック用メソッド。<br />
+   * ファイルアップのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  @Override
+  public boolean isCheckAttachmentAuthority() {
+    return true;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      try {
+        // オブジェクトモデルを取得
+        Integer entryId = BlogUtils.getEipTBlogEntryId(rundata, context);
+        if (entryId == null) {
+          return false;
+        }
+        // サーバーに残すファイルのID
+        List<Integer> formIdList = getRequestedHasFileIdList(fileuploadList);
+        // 現在選択しているエントリが持っているファイル
+        List<EipTBlogFile> files = BlogUtils.getEipTBlogFileList(entryId);
+        List<Integer> existFileIdList = new ArrayList<Integer>();
+        if (files != null) {
+          for (EipTBlogFile file : files) {
+            existFileIdList.add(file.getFileId());
+          }
+        }
+
+        return FileuploadUtils.updateValidate(
+          msgList,
+          formIdList,
+          existFileIdList,
+          fileuploadList,
+          hasAttachmentInsertAuthority(),
+          hasAttachmentDeleteAuthority());
+      } catch (Exception ex) {
+        logger.error("BlogEntryFormData.", ex);
+        return false;
+      }
+    }
+    return true;
   }
 }

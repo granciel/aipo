@@ -1222,4 +1222,96 @@ public class WorkflowFormData extends ALAbstractFormData {
   public String getAclPortletFeature() {
     return ALAccessControlConstants.POERTLET_FEATURE_WORKFLOW_REQUEST_SELF;
   }
+
+  private List<Integer> getRequestedHasFileIdList(
+      List<FileuploadLiteBean> attachmentFileNameList) {
+    List<Integer> idlist = new ArrayList<Integer>();
+    FileuploadLiteBean filebean = null;
+    // if (attachmentFileNameList != null && !"".equals(attachmentFileNameList))
+    // {
+    if (attachmentFileNameList != null) {
+      int size = attachmentFileNameList.size();
+      for (int i = 0; i < size; i++) {
+        filebean = attachmentFileNameList.get(i);
+        if (!filebean.isNewFile()) {
+          int index = filebean.getFileId();
+          idlist.add(Integer.valueOf(index));
+        }
+      }
+    }
+    return idlist;
+  }
+
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    if (ALEipConstants.MODE_INSERT.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      try {
+        // オブジェクトモデルを取得
+        Integer requestId =
+          WorkflowUtils.getEipTWorkflowRequestForOwnerId(rundata, context);
+        if (requestId == null) {
+          return false;
+        }
+        // サーバーに残すファイルのID
+        List<Integer> formIdList = getRequestedHasFileIdList(fileuploadList);
+        String[] fileids = rundata.getParameters().getStrings("attachments");
+
+        // fileidsがnullなら、ファイルがアップロードされていないので、trueを返して終了
+        if (fileids == null) {
+          return true;
+        }
+
+        int fileIDsize;
+        if (fileids[0].equals("")) {
+          fileIDsize = 0;
+        } else {
+          fileIDsize = fileids.length;
+        }
+        // 現在選択しているエントリが持っているファイル
+        // この辺の効率化が課題とは思うものの、一応動作はしているはず。
+        SelectQuery<EipTWorkflowFile> dbquery =
+          Database.query(EipTWorkflowFile.class);
+        dbquery.andQualifier(ExpressionFactory.matchDbExp(
+          EipTWorkflowFile.EIP_TWORKFLOW_REQUEST_PROPERTY,
+          requestId));
+        for (int i = 0; i < fileIDsize; i++) {
+          dbquery.orQualifier(ExpressionFactory.matchDbExp(
+            EipTWorkflowFile.FILE_ID_PK_COLUMN,
+            fileids[i]));
+        }
+        List<EipTWorkflowFile> existsFiles = dbquery.fetchList();
+
+        List<Integer> existFileIdList = new ArrayList<Integer>();
+        if (existsFiles != null) {
+          for (EipTWorkflowFile file : existsFiles) {
+            existFileIdList.add(file.getFileId());
+          }
+        }
+
+        return FileuploadUtils.updateValidate(
+          msgList,
+          formIdList,
+          existFileIdList,
+          fileuploadList,
+          hasAttachmentInsertAuthority(),
+          hasAttachmentDeleteAuthority());
+      } catch (Exception ex) {
+        logger.error("WorkflowFormData.", ex);
+        return false;
+      }
+    }
+    return true;
+  }
 }

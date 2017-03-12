@@ -131,6 +131,9 @@ public class MsgboardTopicSelectData extends
 
   private boolean isFileUploadable;
 
+  /** 添付ファイル追加へのアクセス権限の有無 */
+  private boolean hasAttachmentInsertAuthority;
+
   /**
    *
    * @param action
@@ -141,6 +144,8 @@ public class MsgboardTopicSelectData extends
   public void init(ALAction action, RunData rundata, Context context)
       throws ALPageNotFoundException, ALDBErrorException {
     super.init(action, rundata, context);
+
+    doCheckAttachmentInsertAclPermission(rundata, context);
 
     String sort = ALEipUtils.getTemp(rundata, context, LIST_SORT_STR);
     if (sort == null || sort.equals("")) {
@@ -581,6 +586,10 @@ public class MsgboardTopicSelectData extends
         rundata,
         context,
         ALAccessControlConstants.VALUE_ACL_DETAIL);
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_EXPORT);
       action.setMode(ALEipConstants.MODE_DETAIL);
       List<EipTMsgboardTopic> aList = selectDetailList(rundata, context);
       if (aList != null) {
@@ -758,31 +767,33 @@ public class MsgboardTopicSelectData extends
       rd.setUpdateDate(record.getUpdateDate());
       rd.setLoginUserId(uid);
 
-      List<EipTMsgboardFile> list =
-        getSelectQueryForFiles(record.getTopicId().intValue()).fetchList();
-      if (list != null && list.size() > 0) {
-        List<FileuploadBean> attachmentFileList =
-          new ArrayList<FileuploadBean>();
-        FileuploadBean filebean = null;
-        EipTMsgboardFile file = null;
-        int size = list.size();
-        for (int i = 0; i < size; i++) {
-          file = list.get(i);
-          String realname = file.getFileName();
-          javax.activation.DataHandler hData =
-            new javax.activation.DataHandler(
-              new javax.activation.FileDataSource(realname));
+      if (hasAttachmentAuthority()) {
+        List<EipTMsgboardFile> list =
+          getSelectQueryForFiles(record.getTopicId().intValue()).fetchList();
+        if (list != null && list.size() > 0) {
+          List<FileuploadBean> attachmentFileList =
+            new ArrayList<FileuploadBean>();
+          FileuploadBean filebean = null;
+          EipTMsgboardFile file = null;
+          int size = list.size();
+          for (int i = 0; i < size; i++) {
+            file = list.get(i);
+            String realname = file.getFileName();
+            javax.activation.DataHandler hData =
+              new javax.activation.DataHandler(
+                new javax.activation.FileDataSource(realname));
 
-          filebean = new FileuploadBean();
-          filebean.setFileId(file.getFileId().intValue());
-          filebean.setFileName(realname);
-          if (hData != null) {
-            filebean.setContentType(hData.getContentType());
+            filebean = new FileuploadBean();
+            filebean.setFileId(file.getFileId().intValue());
+            filebean.setFileName(realname);
+            if (hData != null) {
+              filebean.setContentType(hData.getContentType());
+            }
+            filebean.setIsImage(FileuploadUtils.isImage(realname));
+            attachmentFileList.add(filebean);
           }
-          filebean.setIsImage(FileuploadUtils.isImage(realname));
-          attachmentFileList.add(filebean);
+          rd.setAttachmentFiles(attachmentFileList);
         }
-        rd.setAttachmentFiles(attachmentFileList);
       }
 
       return rd;
@@ -999,5 +1010,59 @@ public class MsgboardTopicSelectData extends
 
   public boolean isFileUploadable() {
     return isFileUploadable;
+  }
+
+  /**
+   * アクセス権限をチェックします。
+   *
+   * @return
+   */
+  @Override
+  protected boolean doCheckAclPermission(RunData rundata, Context context,
+      int defineAclType) throws ALPermissionException {
+
+    if (defineAclType == 0) {
+      return true;
+    }
+
+    String pfeature = getAclPortletFeature();
+    if (pfeature == null || "".equals(pfeature)) {
+      return true;
+    }
+
+    ALAccessControlFactoryService aclservice =
+      (ALAccessControlFactoryService) ((TurbineServices) TurbineServices
+        .getInstance()).getService(ALAccessControlFactoryService.SERVICE_NAME);
+    ALAccessControlHandler aclhandler = aclservice.getAccessControlHandler();
+
+    hasAuthority =
+      aclhandler.hasAuthority(
+        ALEipUtils.getUserId(rundata),
+        pfeature,
+        defineAclType);
+
+    if (!hasAuthority) {
+      throw new ALPermissionException();
+    }
+
+    return true;
+  }
+
+  /**
+   * ファイルアップロードのアクセス権限をチェックします。
+   *
+   * @return
+   */
+  protected void doCheckAttachmentInsertAclPermission(RunData rundata,
+      Context context) { // ファイル追加権限の有無
+    hasAttachmentInsertAuthority =
+      doCheckAttachmentAclPermission(
+        rundata,
+        context,
+        ALAccessControlConstants.VALUE_ACL_INSERT);
+  }
+
+  public boolean hasAttachmentInsertAuthority() {
+    return hasAttachmentInsertAuthority;
   }
 }

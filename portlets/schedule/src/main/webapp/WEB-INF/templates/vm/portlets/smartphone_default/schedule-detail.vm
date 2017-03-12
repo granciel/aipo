@@ -65,7 +65,7 @@ $!{result.Detail.DateForCell}
 </tr>
 <tr>
 #ALtdhead('場所')
-<td><a href="http://maps.google.co.jp/maps?hl=ja&q=$!{result.Detail.Place}&um=1&ie=UTF-8&sa=N&tab=vl">$!{result.Detail.Place}</a></td>
+<td><a href="https://maps.google.co.jp/maps?hl=ja&q=$!{result.Detail.Place}&um=1&ie=UTF-8&sa=N&tab=vl">$!{result.Detail.Place}</a></td>
 </tr>
 <tr>
 #ALtdhead('内容')

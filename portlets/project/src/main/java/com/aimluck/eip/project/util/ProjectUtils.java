@@ -140,6 +140,28 @@ public class ProjectUtils {
   // ---------------------------------------------------
 
   /**
+   * プロジェクト情報オブジェクトモデルのIdを取得します。
+   *
+   * @param rundata
+   *          RunData
+   * @param context
+   *          Context
+   * @return プロジェクト情報オブジェクトモデル
+   */
+  public static Integer getEipTProjectId(RunData rundata, Context context) {
+    String projectId =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (projectId == null || (id = Integer.valueOf(projectId)) == null) {
+      // Todo IDが空の場合
+      logger.debug("ProjectUtils] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
+  /**
    * プロジェクト情報オブジェクトモデルを取得します。
    *
    * @param rundata
@@ -149,12 +171,7 @@ public class ProjectUtils {
    * @return プロジェクト情報オブジェクトモデル
    */
   public static EipTProject getEipTProject(RunData rundata, Context context) {
-    Integer projectId =
-      Integer.valueOf(ALEipUtils.getTemp(
-        rundata,
-        context,
-        ALEipConstants.ENTITY_ID));
-    return getEipTProject(projectId);
+    return getEipTProject(getEipTProjectId(rundata, context));
   }
 
   /**
@@ -645,6 +662,28 @@ public class ProjectUtils {
   // ---------------------------------------------------
 
   /**
+   * タスクオブジェクトモデルのIdを取得します。
+   *
+   * @param rundata
+   *          RunData
+   * @param context
+   *          Context
+   * @return タスクオブジェクトモデル
+   */
+  public static Integer getEipTProjectTaskId(RunData rundata, Context context) {
+    String taskId =
+      ALEipUtils.getTemp(rundata, context, ALEipConstants.ENTITY_ID);
+    Integer id = null;
+    if (taskId == null || (id = Integer.valueOf(taskId)) == null) {
+      // Todo IDが空の場合
+      logger.debug("ProjectUtils] Empty ID...");
+      return null;
+    } else {
+      return id;
+    }
+  }
+
+  /**
    * タスクオブジェクトモデルを取得します。
    *
    * @param rundata
@@ -1095,7 +1134,7 @@ public class ProjectUtils {
    * @return タスクコメントのリスト
    */
   public static List<ProjectTaskCommentResultData> getProjectTaskCommentList(
-      String taskId) {
+      String taskId, boolean hasAttachmentAuthority) {
     List<ProjectTaskCommentResultData> commentList =
       new ArrayList<ProjectTaskCommentResultData>();
 
@@ -1127,12 +1166,14 @@ public class ProjectUtils {
         data.setUpdateDate(comment.getUpdateDate());
         data.setHasPhoto(user.hasPhoto());
 
-        // ファイルリスト
-        List<EipTProjectTaskCommentFile> filelist =
-          pfile.getSelectQueryForFiles(
-            EipTProjectTaskComment.COMMENT_ID_PK_COLUMN,
-            Integer.valueOf(comment.getCommentId())).fetchList();
-        data.setAttachmentFiles(pfile.getFileList(filelist));
+        if (hasAttachmentAuthority) {
+          // ファイルリスト
+          List<EipTProjectTaskCommentFile> filelist =
+            pfile.getSelectQueryForFiles(
+              EipTProjectTaskComment.COMMENT_ID_PK_COLUMN,
+              Integer.valueOf(comment.getCommentId())).fetchList();
+          data.setAttachmentFiles(pfile.getFileList(filelist));
+        }
 
         commentList.add(data);
       }

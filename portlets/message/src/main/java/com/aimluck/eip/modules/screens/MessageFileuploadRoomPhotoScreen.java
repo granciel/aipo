@@ -109,4 +109,15 @@ public class MessageFileuploadRoomPhotoScreen extends FileuploadThumbnailScreen 
       logger.error("MessageFileuploadRoomPhotoScreen.doOutput", e);
     }
   }
+
+  /**
+   * ファイルアクセス権限チェック用メソッド。<br />
+   * ファイルのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  @Override
+  public boolean isCheckAttachmentAuthority() {
+    return false;
+  }
 }

@@ -48,7 +48,7 @@
 
 <div class="tlInputAttachment" style="display: none">
   <p class="tlInputAttachmentTitle">添付ファイル</p>
-  <ul id="attachments_$!{portlet.ID}" class="attachments #if(!$result.isFileUploadable())mb_hide#end">
+  <ul id="attachments_$!{portlet.ID}" class="attachments #if(!$result.isFileUploadable() || !$result.hasAttachmentInsertAuthority())hide#end">
     #foreach($record in $!result.AttachmentFileNameList )
     <li data-fileid="s${record.FileId}" data-filename="$!{record.FileName}"><span>$!record.FileName</span><span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">$l10n.TIMELINE_DELETION</span></li>
     #end
@@ -62,8 +62,8 @@
     <span id="getTimelineOnClick" style="display:none;"></span>
 	<input href="javascript:void(0)" type="submit" id="al_submit_$!{portlet.ID}" class="auiButtonAction" onclick="aipo.timeline.write(this, '$indicator_id', '$portlet.ID');" value="$l10n.TIMELINE_POST" />
   </div>
-  <div class="floatLeft mr10 #if(!$result.isFileUploadable())mb_hide#end">
-    #IFFileUpload()
+  <div class="floatLeft mr10 #if(!$result.isFileUploadable() || !$result.hasAttachmentInsertAuthority())hide#end">
+    #ACLIFFileUpload()
   </div>
   <input type="hidden" id="folderName_$!{portlet.ID}" name="folderName" value="$!result.FolderName" />
 </div>

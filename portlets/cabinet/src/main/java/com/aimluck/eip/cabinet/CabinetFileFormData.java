@@ -52,7 +52,7 @@ import com.aimluck.eip.util.ALLocalizationUtils;
 
 /**
  * 共有フォルダのファイルフォームデータを管理するクラス <BR>
- * 
+ *
  */
 public class CabinetFileFormData extends ALAbstractFormData {
 
@@ -97,12 +97,12 @@ public class CabinetFileFormData extends ALAbstractFormData {
   private RunData rundata;
 
   /**
-   * 
+   *
    * @param action
    * @param rundata
    * @param context
-   * 
-   * 
+   *
+   *
    */
   @Override
   public void init(ALAction action, RunData rundata, Context context)
@@ -153,8 +153,8 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * 各フィールドを初期化します。 <BR>
-   * 
-   * 
+   *
+   *
    */
   @Override
   public void initField() {
@@ -184,7 +184,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
   }
 
   /**
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -229,8 +229,8 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルの各フィールドに対する制約条件を設定します。 <BR>
-   * 
-   * 
+   *
+   *
    */
   @Override
   protected void setValidator() {
@@ -248,10 +248,10 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルのフォームに入力されたデータの妥当性検証を行います。 <BR>
-   * 
+   *
    * @param msgList
    * @return TRUE 成功 FALSE 失敗
-   * 
+   *
    */
   @Override
   protected boolean validate(List<String> msgList) {
@@ -290,7 +290,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルをデータベースから読み出します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -328,7 +328,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルをデータベースとファイルシステムから削除します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -382,7 +382,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルをデータベースとファイルシステムに格納します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -509,7 +509,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * データベースとファイルシステムに格納されているファイルを更新します。 <BR>
-   * 
+   *
    * @param rundata
    * @param context
    * @param msgList
@@ -646,8 +646,8 @@ public class CabinetFileFormData extends ALAbstractFormData {
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @return
    */
   public ALNumberField getFolderId() {
@@ -656,7 +656,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルタイトルを取得する． <BR>
-   * 
+   *
    * @return
    */
   public ALStringField getFileTitle() {
@@ -665,7 +665,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイル名を取得する． <BR>
-   * 
+   *
    * @return
    */
   public ALStringField getFileName() {
@@ -674,7 +674,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイル名を取得する(長い名前は折り返す)． <BR>
-   * 
+   *
    * @return
    */
   public String getFileNameHtml() {
@@ -683,7 +683,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * ファイルサイズを取得する． <BR>
-   * 
+   *
    * @return
    */
   public ALNumberField getFileSize() {
@@ -692,7 +692,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
 
   /**
    * メモを取得する． <BR>
-   * 
+   *
    * @return
    */
   public ALStringField getNote() {
@@ -708,7 +708,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
   }
 
   /**
-   * 
+   *
    * @param id
    * @return
    */
@@ -723,7 +723,7 @@ public class CabinetFileFormData extends ALAbstractFormData {
   /**
    * アクセス権限チェック用メソッド。<br />
    * アクセス権限の機能名を返します。
-   * 
+   *
    * @return
    */
   @Override
@@ -731,4 +731,34 @@ public class CabinetFileFormData extends ALAbstractFormData {
     return ALAccessControlConstants.POERTLET_FEATURE_CABINET_FILE;
   }
 
+  /**
+   * 添付ファイルに関する権限チェック
+   *
+   * @param msgList
+   * @return
+   */
+  // @Override
+  @Override
+  protected boolean extValidate(RunData rundata, Context context,
+      List<String> msgList) {
+    // 添付ファイルの場合、updateでも差し替えしか存在しないので、Insert/Updateでの条件分岐は不要
+
+    if (ALEipConstants.MODE_INSERT.equals(getMode())
+      || ALEipConstants.MODE_UPDATE.equals(getMode())) {
+      return FileuploadUtils.insertValidate(
+        msgList,
+        fileuploadList,
+        hasAttachmentInsertAuthority());
+    } else if (ALEipConstants.MODE_DELETE.equals(getMode())) {
+      if (hasAttachmentDeleteAuthority()) {
+        return true;
+      } else {
+        msgList
+          .add(ALAccessControlConstants.DEF_ATTACHMENT_PERMISSION_ERROR_STR);
+        return false;
+      }
+    } else {
+      return true;
+    }
+  }
 }

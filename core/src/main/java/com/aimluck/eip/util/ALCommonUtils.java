@@ -496,6 +496,14 @@ public class ALCommonUtils {
     return ALEipUtils.isFileUploadable(rundata);
   }
 
+  public static boolean hasAttachmentInsertAuthority(RunData rundata) {
+    return ALAccessControlUtils.hasAttachmentInsertAuthority(rundata);
+  }
+
+  public static boolean hasAttachmentDeleteAuthority(RunData rundata) {
+    return ALAccessControlUtils.hasAttachmentDeleteAuthority(rundata);
+  }
+
   public static byte[] encrypt(String key, String text) {
     try {
       SecretKeySpec sksSpec = new SecretKeySpec(key.getBytes(), "Blowfish");

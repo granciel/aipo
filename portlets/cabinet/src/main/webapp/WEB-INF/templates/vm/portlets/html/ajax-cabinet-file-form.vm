@@ -33,6 +33,9 @@
 #ALdialogheader($subtitle)
 #ALajaxIndicator("$indicator_id" "$!portlet.ID" "")
 #ALerrmsg($errmsgs)
+#if($mode=="new_form"&& !$result.hasAttachmentInsertAuthority())
+<div id="messageDiv"><ul><li>$l10n.COMMON_ATTACHMENT_PERMISSION_DENIED</li></ul></div>
+#else
 <div id="messageDiv"></div>
 <div id="messageDiv_$!portlet.ID"></div>
 #ALajaxscreenformheader("cabinetfileForm" $jslink $portlet "CabinetFileFormJSONScreen" "aimluck.io.createSelectFromFileList(this, '$!portlet.ID');aimluck.io.submit(this,'$indicator_id','$!portlet.ID', aipo.cabinet.onReceiveMessage)")
@@ -44,16 +47,16 @@
 #ALtableheaderWide()
 #ALtdcaption("#ALrequired($!result.getFieldName('file_title'))")
 #ALtditem("#ALtextfieldw100('file_title' $!result.FileTitle 50 'active')")
-<tr #if(!$result.isFileUploadable())class="mb_hide"#end>
+<tr #if(!$result.isFileUploadable() || (!$result.hasAttachmentInsertAuthority() && !$result.hasAttachmentDeleteAuthority()))class="hide"#end>
 <td class="caption">#ALrequired($!result.getFieldName('file_name'))</td>
 <td>
   <div class="clearfix">
   <div>
-  #IFFileUpload()
+  #ACLIFFileUpload()
   </div>
   <ul id="attachments_$!{portlet.ID}" class="attachments">
     #if($mode=="edit_form")
-    <li data-fileid="1" data-filename="$!result.FileName"><span>$!result.FileNameHtml</span><span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">$l10n.CABINET_DELET</span></li>
+    <li data-fileid="1" data-filename="$!result.FileName"><span>$!result.FileNameHtml</span>#if($result.hasAttachmentInsertAuthority()&&$result.hasAttachmentDeleteAuthority())<span class="deletebutton" onclick="aimluck.io.removeFileFromList(this.parentNode.parentNode,this.parentNode);">$l10n.CABINET_DELET</span>#end</li>
     #end
   </ul>
   <input type="hidden" id="folderName_$!{portlet.ID}" name="folderName" value="$!result.FolderName" />
@@ -86,4 +89,5 @@
 #ALajaxbuttonClose()
 #ALbuttonfooter()
 #ALformfooter()
+#end
 #ALdialogfooter()

@@ -176,4 +176,15 @@ public class MessageRoomListSelectData extends
   public int getLoginUserId() {
     return userId;
   }
+
+  /**
+   * ファイルアクセス権限チェック用メソッド。<br />
+   * ファイルのアクセス権限をチェックするかどうかを判定します。
+   *
+   * @return
+   */
+  @Override
+  public boolean isCheckAttachmentAuthority() {
+    return false;
+  }
 }
